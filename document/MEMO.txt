@@ -1,0 +1,97 @@
+Advancedターム
+
+フロント部分はvue.jsで実装する
+
+【テーブル定義】
+・ユーザテーブル
+  id
+  name
+  email
+  password (SHA256)
+  create_at
+  update_at
+・予約テーブル
+  id
+  user_id
+  restaulant_id
+  reserve_date
+  create_at
+  update_at
+・お気に入りテーブル
+  id
+  user_id
+  restaulant_id
+  create_at
+  update_id
+・レストランテーブル
+  id
+  name
+  genre
+  area
+  create_at
+  update_at
+
+【機能一覧】
+会員登録
+ログイン
+ログアウト
+ユーザー情報取得
+ユーザー飲食店お気に入り一覧取得
+ユーザー飲食店予約情報取得
+飲食店一覧取得
+飲食店詳細取得
+飲食店お気に入り追加
+飲食店お気に入り削除
+飲食店予約情報追加
+飲食店予約情報削除
+エリアで検索する
+ジャンルで検索する
+店名で検索する
+
+【API設計】
+ログイン
+/api/v1/login GET
+
+ログアウト
+/api/v1/logout GET
+
+ユーザー情報取得
+/api/v1/user GET
+
+ユーザー飲食店予約情報取得
+/api/v1/reserve GET
+
+飲食店予約情報追加
+/api/v1/reserve POST
+
+飲食店予約情報削除
+/api/v1/reserve DELETE
+
+飲食店一覧取得
+/api/v1/restaulant GET
+
+エリアで検索する
+/api/v1/restaulant/area GET
+
+ジャンルで検索する
+/api/v1/restaulant/genre GET
+
+店名で検索する
+/api/v1/restaulant/name GET
+
+飲食店詳細取得
+/api/v1/restaulant/detail GET
+
+ユーザー飲食店お気に入り一覧取得
+/api/v1/favorite GET
+
+飲食店お気に入り追加
+/api/v1/favorite POST
+
+飲食店お気に入り削除
+/api/v1/favorite DELETE
+
+
+
+
+
