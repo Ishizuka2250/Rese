@@ -1,0 +1,1 @@
+https://reffect.co.jp/laravel/laravel-vue-router-single-page-application
