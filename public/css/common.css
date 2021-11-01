@@ -1,23 +1,3 @@
-.header{
-  display: flex;
-  align-items: center;
-  margin: 50px 0 50px 100px;
-}
-.header-menu {
-  display: inline-block;
-  width: 50px;
-  border-radius: 5px;
-  box-shadow: 2px 2px 5px #000;
-}
-.header-menu:hover {
-  cursor: pointer;
-}
-.header-title {
-  display: inline-block;
-  font-size: 50px;
-  margin-left: 40px;
-  color: #305dff;
-}
 .container {
   display: flex;
   justify-content: center;

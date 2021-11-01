@@ -1,5 +1,9 @@
 @extends('layouts.default')
 
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/common.css') }}">
+@endsection
+
 @section('content')
 <div class="container">
   <div class="card">
