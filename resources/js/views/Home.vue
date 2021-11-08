@@ -7,7 +7,7 @@
       <div class="reserves">
         <h2 class="content-title">予約状況</h2>
         <div class="list">
-          <div class="reserve-card">
+          <div v-for="reserve, index in reserves" :key="index" class="reserve-card">
             <div class="reserve-card-header">
               <div class="reserve-name">
                 <img :src="'/images/clock.png'" alt="" class="reserve-card-img">
@@ -18,19 +18,19 @@
             <table class="reserve-detail">
               <tr>
                 <th>Shop</th>
-                <td>{{reserve[0].shop}}</td>
+                <td>{{reserve.restaulant_id}}</td>
               </tr>
               <tr>
                 <th>Date</th>
-                <td>{{reserve[0].date}}</td>
+                <td>{{reserve.reserve_date | getDate}}</td>
               </tr>
               <tr>
                 <th>Time</th>
-                <td>{{reserve[0].time}}</td>
+                <td>{{reserve.reserve_date | getTime}}</td>
               </tr>
               <tr>
                 <th>Number</th>
-                <td>{{reserve[0].number}}人</td>
+                <td>1人</td>
               </tr>
             </table>
           </div>
@@ -78,20 +78,32 @@
 </template>
 
 <script>
+import axios from "axios";
+import moment from "moment";
 export default {
   data() {
     return {
-      user: 'admin',
-      reserve: [
-      {
-        shop: '仙人',
-        date: '2021-04-01',
-        time: '17:00',
-        number: '1'
-      }
-      ]
+      id: this.userinfo.id,
+      user: this.userinfo.name,
+      reserves: []
     }
-  }
+  },
+  async mounted() {
+    const response = await axios.get(
+      "http://localhost:8000/api/v1/reserves/" + this.id
+    );
+    this.reserves = response.data.reserves;
+    console.log(response);
+  },
+  filters: {
+    getTime(value) {
+      return moment(value).format("kk:mm");
+    },
+    getDate(value) {
+      return moment(value).format("YYYY/MM/DD");
+    }
+  },
+  props: ['userinfo']
 }
 </script>
 

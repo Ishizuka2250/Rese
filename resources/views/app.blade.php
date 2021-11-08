@@ -3,7 +3,7 @@
 @section('title', 'Home')
 @section('content')
 <div id="app">
-  <router-view></router-view>
+  <router-view :userinfo="{{ json_encode($userinfo) }}"></router-view>
 </div>
 <script src="{{ mix('js/app.js')}}"></script>
 @endsection
