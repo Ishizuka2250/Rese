@@ -17,6 +17,7 @@ class Reserve extends Model
     public static $rules = array(
         'user_id' => 'required',
         'restaulant_id' => 'required',
+        'number' => 'required',
         'reserve_date' => 'required'
     );
 }

@@ -30,7 +30,7 @@
               </tr>
               <tr>
                 <th>Number</th>
-                <td>1人</td>
+                <td>{{reserve.number}}人</td>
               </tr>
             </table>
           </div>
