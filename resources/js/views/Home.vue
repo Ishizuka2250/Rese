@@ -18,7 +18,7 @@
             <table class="reserve-detail">
               <tr>
                 <th>Shop</th>
-                <td>{{reserve.restaulant_id}}</td>
+                <td>{{reserve.name}}</td>
               </tr>
               <tr>
                 <th>Date</th>
