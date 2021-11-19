@@ -6,14 +6,14 @@
     <div class="main-containts">
       <div class="reserves">
         <h2 class="content-title">予約状況</h2>
-        <div class="list">
+        <div class="list flex-column">
           <div v-for="reserve, index in reserves" :key="index" class="reserve-card">
             <div class="reserve-card-header">
               <div class="reserve-name">
-                <img :src="'/images/clock.png'" alt="" class="reserve-card-img">
+                <img v-bind:src="'/images/clock.png'" alt="" class="reserve-card-img">
                 <p>予約1</p>
               </div>
-              <img :src="'/images/cancel.png'" class="reserve-card-img" alt="">
+              <img v-bind:src="'/images/cancel.png'" class="reserve-card-img" alt="">
             </div>
             <table class="reserve-detail">
               <tr>
@@ -38,31 +38,15 @@
       </div>
       <div class="favorites">
         <h2 class="content-title">お気に入り店舗</h2>
-        <div class="list">
-          <div class="favorite-card">
+        <div class="list flex-row">
+          <div v-for="favorite, index in favorites" :key="index" class="favorite-card">
             <div class="favorite-card-img">
-              <img :src="'/shop-images/sushi.jpg'" alt="">
+              <img v-bind:src="favorite.restaurant_id | getImageName" alt="">
             </div>
             <div class="favorite-card-content">
-              <p class="shop-name">仙人</p>
-              <div class="shop-genles">
-                <p>#東京都</p>
-                <p>#寿司</p>
-              </div>
-              <div class="favorite-card-footer">
-                <a href="#" class="shop-detail-button">詳しくみる</a>
-                <img :src="'/images/heart.png'" class="heart" alt="">
-              </div>
-            </div>
-          </div>
-          <div class="favorite-card">
-            <div class="favorite-card-img">
-              <img :src="'/shop-images/sushi.jpg'" alt="">
-            </div>
-            <div class="favorite-card-content">
-              <p class="shop-name">仙人</p>
-              <div class="shop-genles">
-                <p>#東京都</p>
+              <p class="shop-name">{{favorite.name}}</p>
+              <div class="shop-area-genles">
+                <p>#{{favorite.area}}</p>
                 <p>#寿司</p>
               </div>
               <div class="favorite-card-footer">
@@ -85,15 +69,20 @@ export default {
     return {
       id: this.userinfo.id,
       user: this.userinfo.name,
-      reserves: []
+      reserves: [],
+      favorites: []
     }
   },
   async mounted() {
-    const response = await axios.get(
+    const reservesResponse = await axios.get(
       "http://localhost:8000/api/v1/reserves/" + this.id
     );
-    this.reserves = response.data.reserves;
-    console.log(response);
+    this.reserves = reservesResponse.data.reserves;
+    const favoritesResponse = await axios.get(
+      "http://localhost:8000/api/v1/favorites/" + this.id
+    );
+    this.favorites = favoritesResponse.data.favorites;
+    console.log(this.favorites);
   },
   filters: {
     getTime(value) {
@@ -101,9 +90,13 @@ export default {
     },
     getDate(value) {
       return moment(value).format("YYYY/MM/DD");
+    },
+    getImageName(value) {
+      let imageName = "000" + value;
+      return "/shop-images/" + imageName.slice(-3) + ".jpg";
     }
   },
-  props: ['userinfo']
+  props: ["userinfo"]
 }
 </script>
 
@@ -118,7 +111,6 @@ export default {
 }
 .main-containts {
   display: flex;
-  justify-content: space-between;
 }
 .content-title {
   display: block;
@@ -126,64 +118,28 @@ export default {
   margin: 20px 0;
 }
 .reserves {
-  width: 35%;
-  display: flex;
-  flex-direction: column;
+  width: 400px;
+  margin-right: 50px;
 }
 .favorites {
   width: 60%;
 }
 .list {
   display: flex;
-  justify-content: space-between;
 }
-.favorite-card {
-  width: 300px;
-  border-radius: 5px;
-  box-shadow: 0 0 5px #000;
-  overflow: hidden;
+.flex-column {
+  flex-direction: column;
 }
-.favorite-card-img {
-  height: 160px;
-}
-.favorite-card-img img{
-  width: 100%;
-  height: inherit;
-  object-fit: cover;
-}
-.favorite-card-content {
-  padding: 20px;
-}
-.shop-name {
-  font-weight: bold;
+.flex-column div{
   margin-bottom: 10px;
-  font-size: larger;
 }
-.shop-genles {
-  display: flex;
-  margin-bottom: 20px;
+.flex-row {
+  flex-direction: row;
+  flex-wrap: wrap;
 }
-.shop-genles p:not(:last-of-type) {
-  display: inline-block;
-  margin-right: 10px;
-}
-.shop-detail-button {
-  display: inline-block;
-  text-decoration: none;
-  color: #FFF;
-  background-color: #305dff;
-  padding: 10px 20px;
-  border-radius: 5px;
-}
-.favorite-card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.heart {
-  display: inline-block;
-  width: 30px;
-  height: 30px;
+.flex-row div {
+  margin-right : 10px;
+  margin-bottom: 10px;
 }
 .reserve-card-header {
   display: flex;
@@ -195,6 +151,7 @@ export default {
   width: 100%;
   padding: 25px;
   border-radius: 5px;
+  box-sizing: border-box;
   background: #305dff;
   box-shadow: 0 0 5px #000;
 }
@@ -222,4 +179,54 @@ export default {
 .reserve-detail tr td {
   color: #FFF;
 }
+.favorite-card {
+  width: 300px;
+  border-radius: 5px;
+  box-shadow: 0 0 5px #000;
+  overflow: hidden;
+}
+.favorite-card-img {
+  width: inherit;
+  height: 160px;
+}
+.favorite-card-img img{
+  width: 100%;
+  height: inherit;
+  object-fit: cover;
+}
+.favorite-card-content {
+  padding: 20px;
+}
+.shop-name {
+  font-weight: bold;
+  margin-bottom: 10px;
+  font-size: larger;
+}
+.shop-area-genles {
+  display: flex;
+  margin-bottom: 20px;
+}
+.shop-area-genles p:not(:last-of-type) {
+  display: inline-block;
+  margin-right: 10px;
+}
+.shop-detail-button {
+  display: inline-block;
+  text-decoration: none;
+  color: #FFF;
+  background-color: #305dff;
+  padding: 10px 20px;
+  border-radius: 5px;
+}
+.favorite-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.heart {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+}
+
 </style>
