@@ -32,7 +32,7 @@ class RestaurantGenleController extends Controller
         }else{
             return response()->json([
                 'message' => 'Not found'
-            ], 400);
+            ], 200);
         }
     }
 

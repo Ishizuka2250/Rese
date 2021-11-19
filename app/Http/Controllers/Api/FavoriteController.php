@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Favorite;
 use App\Models\Restaurant;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FavoriteController extends Controller
 {
@@ -44,17 +45,26 @@ class FavoriteController extends Controller
                 'restaurants.name',
                 'areas.area'
             );
+        $groupConcatGenles = DB::table('restaurant_genles')
+            ->select(
+                'restaurant_genles.restaurant_id as id',
+                DB::raw('group_concat(genles.genle) as genles'))
+            ->leftjoin('genles', 'restaurant_genles.genle_id', '=', 'genles.id')
+            ->groupBy('restaurant_genles.restaurant_id');
         $favorites = Favorite::select(
                 'favorites.id',
                 'favorites.user_id',
                 'favorites.restaurant_id',
                 'sub_restaurants.name',
                 'sub_restaurants.area',
+                'sub_group_concat_genles.genles',
                 'favorites.created_at',
                 'favorites.updated_at')
             ->leftjoinsub($subRestaurants, 'sub_restaurants', 'favorites.restaurant_id', 'sub_restaurants.id')
+            ->leftjoinsub($groupConcatGenles, 'sub_group_concat_genles', 'favorites.restaurant_id', 'sub_group_concat_genles.id')
             ->where('favorites.user_id', $UserId)
             ->get();
+        
         if ($favorites) {
             return response()->json([
                 'favorites' => $favorites

@@ -47,7 +47,7 @@
               <p class="shop-name">{{favorite.name}}</p>
               <div class="shop-area-genles">
                 <p>#{{favorite.area}}</p>
-                <p>#寿司</p>
+                <p v-for="genle, index in getGenle(favorite.genles)" :key="index">#{{genle}}</p>
               </div>
               <div class="favorite-card-footer">
                 <a href="#" class="shop-detail-button">詳しくみる</a>
@@ -82,7 +82,6 @@ export default {
       "http://localhost:8000/api/v1/favorites/" + this.id
     );
     this.favorites = favoritesResponse.data.favorites;
-    console.log(this.favorites);
   },
   filters: {
     getTime(value) {
@@ -94,6 +93,11 @@ export default {
     getImageName(value) {
       let imageName = "000" + value;
       return "/shop-images/" + imageName.slice(-3) + ".jpg";
+    },
+  },
+  methods: {
+    getGenle(value) {
+      return value.split(",")
     }
   },
   props: ["userinfo"]
