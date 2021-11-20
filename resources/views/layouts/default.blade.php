@@ -13,18 +13,25 @@
 </head>
 <body>
   <header class="header">
-    <img src="{{ asset('images/header_img.png') }}" class="header-menu" alt="">
+    <img src="{{ asset('images/header_img.png') }}" class="header-menu" alt="" id="header-open">
     <h1 class="header-title">Rese</h1>
-    <div style="margin-left: 30px">
-      <a href="{{ route('logout') }}" style="text-decoration: none"
-        onclick="event.preventDefault();document.getElementById('logout-form').submit();">
-        Logout
-      </a>
-      <form id="logout-form" action="{{ route('logout') }}" method="POST">
-        @csrf
-      </form>
+    <div class="menu" id="menu">
+      <div class="menu-contents">
+        <img src="{{ asset('images/close_img.png') }}" class="header-menu" alt="" id="header-close">
+        <nav>
+          <a href="#">Home</a>
+          <a href="{{ route('logout') }}" style="text-decoration: none" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
+            Logout
+          </a>
+          <form id="logout-form" action="{{ route('logout') }}" method="POST">
+            @csrf
+          </form>
+          <a href="#">MyPage</a>
+        </nav>
+      </div>
     </div>
   </header>
   @yield("content")
+  <script src="{{ asset('js/menu.js') }}"></script>
 </body>
 </html>
