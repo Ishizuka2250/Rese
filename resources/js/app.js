@@ -10,10 +10,11 @@ import Components from 'laravel-mix/src/components/Components';
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import router from './router';
-import Home from './views/Home.vue'
-
+import vSelect from 'vue-select';
+import 'vue-select/dist/vue-select.css'
 window.Vue = require('vue').default;
 Vue.use(VueRouter);
+Vue.component('v-select', vSelect);
 
 /**
  * The following block of code may be used to automatically register your

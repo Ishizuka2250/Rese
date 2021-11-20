@@ -12,7 +12,7 @@
 <script>
 import axios from "axios";
 import moment from "moment";
-import header from './Header.vue';
+import header from './HeaderWithSearchBar.vue';
 export default {
   components: {
     appHeader: header
