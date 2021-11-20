@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <appHeader :csrf="this.csrf"></appHeader>
     <div class="login-user">
       {{user}}さん
     </div>
@@ -64,7 +65,11 @@
 <script>
 import axios from "axios";
 import moment from "moment";
+import header from './Header.vue';
 export default {
+  components: {
+    appHeader: header
+  },
   data() {
     return {
       id: this.userinfo.id,
@@ -100,7 +105,7 @@ export default {
       return value.split(",")
     }
   },
-  props: ["userinfo"]
+  props: ["userinfo", "csrf"],
 }
 </script>
 

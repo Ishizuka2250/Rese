@@ -13,8 +13,10 @@
 </head>
 <body>
   <header class="header">
-    <img src="{{ asset('images/header_img.png') }}" class="header-menu" alt="" id="header-open">
-    <h1 class="header-title">Rese</h1>
+    <div>
+      <img src="{{ asset('images/header_img.png') }}" class="header-menu" alt="" id="header-open">
+      <h1 class="header-title">Rese</h1>
+    </div>
     <div class="menu" id="menu">
       <div class="menu-contents">
         <img src="{{ asset('images/close_img.png') }}" class="header-menu" alt="" id="header-close">

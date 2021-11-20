@@ -1,7 +1,9 @@
 <template>
   <div class="container">
+    <appHeader :csrf="this.csrf"></appHeader>
     <div class="main-containts">
       <div class="reserves">
+        <p>hoge</p>
       </div>
     </div>
   </div>
@@ -10,7 +12,11 @@
 <script>
 import axios from "axios";
 import moment from "moment";
+import header from './Header.vue';
 export default {
+  components: {
+    appHeader: header
+  },
   data() {
     return {
       id: this.userinfo.id,
@@ -20,14 +26,14 @@ export default {
     }
   },
   async mounted() {
-    const reservesResponse = await axios.get(
-      "http://localhost:8000/api/v1/reserves/" + this.id
-    );
-    this.reserves = reservesResponse.data.reserves;
-    const favoritesResponse = await axios.get(
-      "http://localhost:8000/api/v1/favorites/" + this.id
-    );
-    this.favorites = favoritesResponse.data.favorites;
+    // const reservesResponse = await axios.get(
+    //   "http://localhost:8000/api/v1/reserves/" + this.id
+    // );
+    // this.reserves = reservesResponse.data.reserves;
+    // const favoritesResponse = await axios.get(
+    //   "http://localhost:8000/api/v1/favorites/" + this.id
+    // );
+    // this.favorites = favoritesResponse.data.favorites;
   },
   filters: {
     getTime(value) {
@@ -46,7 +52,7 @@ export default {
       return value.split(",")
     }
   },
-  props: ["userinfo"]
+  props: ["userinfo", "csrf"]
 }
 </script>
 
