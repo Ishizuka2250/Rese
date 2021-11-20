@@ -19,5 +19,7 @@ Route::get('/', function () {
 });
 
 Auth::routes();
-
+Route::get('/app/', function() {
+    return redirect('/app/home');
+});
 Route::get('/app/{any}', [App\Http\Controllers\HomeController::class, 'index'])->where('any', '.*');

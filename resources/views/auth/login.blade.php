@@ -4,6 +4,10 @@
 <link rel="stylesheet" href="{{ asset('css/common.css') }}">
 @endsection
 
+@section('side-menu')
+  <a href="{{ route('register') }}">Register</a>
+@endsection
+
 @section('content')
 <div class="container">
   <div class="card">

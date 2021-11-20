@@ -19,14 +19,7 @@
       <div class="menu-contents">
         <img src="{{ asset('images/close_img.png') }}" class="header-menu" alt="" id="header-close">
         <nav>
-          <a href="#">Home</a>
-          <a href="{{ route('logout') }}" style="text-decoration: none" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
-            Logout
-          </a>
-          <form id="logout-form" action="{{ route('logout') }}" method="POST">
-            @csrf
-          </form>
-          <a href="#">MyPage</a>
+          @yield('side-menu')
         </nav>
       </div>
     </div>
