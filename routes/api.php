@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ReserveController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\RestaurantGenleController;
-
+use App\Http\Controllers\Api\RestaurantController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -23,5 +23,6 @@ use App\Http\Controllers\Api\RestaurantGenleController;
 // });
 Route::apiResource('/v1/reserves', ReserveController::class);
 Route::apiResource('/v1/favorites', FavoriteController::class);
+Route::apiResource('/v1/restaurants', RestaurantController::class);
 Route::apiResource('/v1/restaurants/{restaurantID}/genles', RestaurantGenleController::class);
 
