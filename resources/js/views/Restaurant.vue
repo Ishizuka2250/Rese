@@ -5,7 +5,7 @@
       <div class="list flex-row">
         <div v-for="restaurant, index in restaurants" :key="index" class="restaurant-card">
           <div class="restaurant-card-img">
-            <img v-bind:src="restaurant.restaurant_id | getImageName" alt="">
+            <img v-bind:src="restaurant.id | getImageName" alt="">
           </div>
           <div class="restaurant-card-content">
             <p class="shop-name">{{restaurant.name}}</p>
@@ -39,11 +39,8 @@ export default {
       restaurants: [],
     }
   },
-  async mounted() {
-    // const restaurantsResponse = await axios.get(
-    //   "http://localhost:8000/api/v1/restaurants/" + this.id
-    // );
-    // this.restaurants = restaurantsResponse.data.restaurants;
+  mounted() {
+    this.requestRestaurantsAPI();
   },
   filters: {
     getTime(value) {
@@ -58,8 +55,19 @@ export default {
     },
   },
   methods: {
+    async requestRestaurantsAPI(params={}) {
+      let requestParameter = '?userid=' + this.id;
+      Object.keys(params).forEach((key) => {
+        requestParameter = params[key] != '' ? requestParameter + '&' + key + '=' + params[key] : requestParameter;
+      });
+      console.log('rp:' + requestParameter);
+      const restaurantsResponse = await axios.get(
+        "http://localhost:8000/api/v1/restaurants/" + requestParameter
+      );
+      this.restaurants = restaurantsResponse.data.restaurants;
+    },
     searchRestaurant(searchItems) {
-      console.log(searchItems);
+      this.requestRestaurantsAPI(searchItems);
     },
     getGenle(value) {
       return value.split(",")

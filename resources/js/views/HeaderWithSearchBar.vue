@@ -8,7 +8,7 @@
       <div class="search-bars">
       <v-select :options="this.areas" v-model="area" class="search-bar combo"></v-select>
       <v-select :options="this.genles" v-model="genle" class="search-bar combo"></v-select>
-      <input type="text" v-model="search" class="search-bar combo" placeholder="Search..">
+      <input type="text" v-model="search" class="search-bar combo" placeholder="Search Restaurant..">
       <img v-bind:src="'/images/glass.png'" @click="send" class="glass">
       </div>
     </div>
@@ -34,11 +34,11 @@
 export default {
   data () {
     return {
-      area: 'All Areas',
-      genle: 'All Genles',
+      area: 'All Area',
+      genle: 'All Genle',
       search: '',
-      areas: ['All Areas', '東京都'],
-      genles: ['All Genles', '寿司'],
+      areas: ['All Area', '東京都'],
+      genles: ['All Genle', '寿司'],
     }
   },
   mounted() {
@@ -56,8 +56,8 @@ export default {
   },
   methods: {
     send() {
-      const sendArea = this.area == 'All Areas' ? 'All' : this.area;
-      const sendGenle = this.genle == 'All Genles' ? 'All' : this.genle;
+      const sendArea = this.area == null ? 'All Area' : this.area;
+      const sendGenle = this.genle == null ? 'All Genle' : this.genle;
       this.$emit('send-search', {
         area: sendArea,
         genle: sendGenle,

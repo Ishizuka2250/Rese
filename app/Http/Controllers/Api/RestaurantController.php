@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class RestaurantController extends Controller
 {
+    protected $restaurants;
     /**
      * Display a listing of the resource.
      *
@@ -18,15 +19,16 @@ class RestaurantController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->userid) {
-            $restaurants = $this->restaurants($request->userid)->get();
+        if($request->has('userid')) {
+            $this->restaurantsAll($request->userid);
         }else{
-            $restaurants = $this->restaurants(0)->get();
+            $this->restaurantsAll(0);
         }
+        $this->area($request)->genle($request)->searchShopName($request);
 
-        if ($restaurants) {
+        if ($this->restaurants) {
             return response()->json([
-                'restaurants' => $restaurants
+                'restaurants' => $this->restaurants->get()
             ], 200);
         } else {
             return response()->json([
@@ -35,7 +37,31 @@ class RestaurantController extends Controller
         }
     }
 
-    private function restaurants(int $UserID)
+    private function searchShopName(Request $request)
+    {
+        if ($request->has('search')) {
+            $this->restaurants->where('name', 'like', "%$request->search%");
+        }
+        return $this;
+    }
+
+    private function area(Request $request)
+    {
+        if (($request->has('area')) && ($request->area != 'All Area')) {
+            $this->restaurants->where('area', '=', $request->area);
+        }
+        return $this;
+    }
+
+    private function genle($request)
+    {
+        if (($request->has('genle')) && ($request->genle != 'All Genle')) {
+            $this->restaurants->where('genles', 'like', "%$request->genle%");
+        }
+        return $this;
+    }
+
+    private function restaurantsAll(int $UserID)
     {
         $groupConcatGenles = DB::table('restaurant_genles')
             ->select(
@@ -51,7 +77,7 @@ class RestaurantController extends Controller
                 'favorites.user_id'
             )->where('favorites.user_id', $UserID);
 
-            $restaurants = Restaurant::select(
+            $this->restaurants = Restaurant::select(
                 'restaurants.id',
                 'restaurants.name',
                 'areas.area',
@@ -62,7 +88,7 @@ class RestaurantController extends Controller
             ->leftjoinsub($groupConcatGenles, 'group_concat_genles', 'restaurants.id', 'group_concat_genles.id')
             ->leftjoinsub($favorites, 'favorites', 'restaurants.id', 'favorites.restaurant_id');
         } else {
-            $restaurants = Restaurant::select(
+            $this->restaurants = Restaurant::select(
                 'restaurants.id',
                 'restaurants.name',
                 'areas.area',
@@ -72,7 +98,7 @@ class RestaurantController extends Controller
             ->leftjoin('areas', 'restaurants.area_id', '=', 'areas.id')
             ->leftjoinsub($groupConcatGenles, 'group_concat_genles', 'restaurants.id', 'group_concat_genles.id');
         }
-        return $restaurants;
+        return $this;
     }
 
     /**
