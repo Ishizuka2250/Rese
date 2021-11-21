@@ -8,7 +8,8 @@
       <div class="search-bars">
       <v-select :options="this.areas" v-model="area" class="search-bar combo"></v-select>
       <v-select :options="this.genles" v-model="genle" class="search-bar combo"></v-select>
-      <input type="text" v-model="search" class="search-bar combo">
+      <input type="text" v-model="search" class="search-bar combo" placeholder="Search..">
+      <img v-bind:src="'/images/glass.png'" @click="send" class="glass">
       </div>
     </div>
     <div class="menu" id="menu">
@@ -33,11 +34,11 @@
 export default {
   data () {
     return {
-      area: 'All Area',
-      genle: 'All Genle',
+      area: 'All Areas',
+      genle: 'All Genles',
       search: '',
-      areas: ['All areas', '東京都'],
-      genles: ['All genles', '寿司'],
+      areas: ['All Areas', '東京都'],
+      genles: ['All Genles', '寿司'],
     }
   },
   mounted() {
@@ -52,6 +53,17 @@ export default {
       const menu = document.getElementById("menu");
       menu.classList.toggle('show');
     });
+  },
+  methods: {
+    send() {
+      const sendArea = this.area == 'All Areas' ? 'All' : this.area;
+      const sendGenle = this.genle == 'All Genles' ? 'All' : this.genle;
+      this.$emit('send-search', {
+        area: sendArea,
+        genle: sendGenle,
+        search: this.search
+      });
+    }
   },
   props: ["csrf"]
 }
@@ -72,6 +84,13 @@ export default {
   font-size: 16px;
   border: 1px solid rgba(60, 60, 60, .26);
   border-radius: 3px;
+}
+.glass {
+  width: 30px;
+  padding: 2px;
+}
+.glass:hover {
+  cursor: pointer;
 }
 .header{
   margin: 50px 0 50px 0px;
