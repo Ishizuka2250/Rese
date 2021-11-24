@@ -5,7 +5,7 @@
       <div class="list flex-row">
         <div v-for="restaurant, index in restaurants" :key="index" class="restaurant-card">
           <div class="restaurant-card-img">
-            <img v-bind:src="restaurant.id | getImageName" alt="">
+            <img v-bind:src="'/shop-images/' + restaurant.image_file_name" alt="">
           </div>
           <div class="restaurant-card-content">
             <p class="shop-name">{{restaurant.name}}</p>
@@ -36,7 +36,7 @@ export default {
     return {
       id: this.userinfo.id,
       user: this.userinfo.name,
-      restaurants: [],
+      restaurants: []
     }
   },
   mounted() {
@@ -49,10 +49,6 @@ export default {
     getDate(value) {
       return moment(value).format("YYYY/MM/DD");
     },
-    getImageName(value) {
-      let imageName = "000" + value;
-      return "/shop-images/" + imageName.slice(-3) + ".jpg";
-    },
   },
   methods: {
     async requestRestaurantsAPI(params={}) {
@@ -60,7 +56,6 @@ export default {
       Object.keys(params).forEach((key) => {
         requestParameter = params[key] != '' ? requestParameter + '&' + key + '=' + params[key] : requestParameter;
       });
-      console.log('rp:' + requestParameter);
       const restaurantsResponse = await axios.get(
         "http://localhost:8000/api/v1/restaurants/" + requestParameter
       );

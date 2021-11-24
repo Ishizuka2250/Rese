@@ -39,10 +39,11 @@ class FavoriteController extends Controller
      */
     public function show(Request $reserve, $UserId)
     {
-        $subRestaurants = Restaurant::leftjoin('areas', 'restaurants.area_id', '=', 'areas.id')
+        $restaurantAreas = Restaurant::leftjoin('areas', 'restaurants.area_id', '=', 'areas.id')
             ->select(
                 'restaurants.id',
                 'restaurants.name',
+                'restaurants.image_file_name',
                 'areas.area'
             );
         $groupConcatGenles = DB::table('restaurant_genles')
@@ -55,13 +56,14 @@ class FavoriteController extends Controller
                 'favorites.id',
                 'favorites.user_id',
                 'favorites.restaurant_id',
-                'sub_restaurants.name',
-                'sub_restaurants.area',
-                'sub_group_concat_genles.genles',
+                'restaurant_areas.name',
+                'restaurant_areas.image_file_name',
+                'restaurant_areas.area',
+                'group_concat_genles.genles',
                 'favorites.created_at',
                 'favorites.updated_at')
-            ->leftjoinsub($subRestaurants, 'sub_restaurants', 'favorites.restaurant_id', 'sub_restaurants.id')
-            ->leftjoinsub($groupConcatGenles, 'sub_group_concat_genles', 'favorites.restaurant_id', 'sub_group_concat_genles.id')
+            ->leftjoinsub($restaurantAreas, 'restaurant_areas', 'favorites.restaurant_id', 'restaurant_areas.id')
+            ->leftjoinsub($groupConcatGenles, 'group_concat_genles', 'favorites.restaurant_id', 'group_concat_genles.id')
             ->where('favorites.user_id', $UserId)
             ->get();
         

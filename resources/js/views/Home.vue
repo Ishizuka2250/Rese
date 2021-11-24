@@ -42,7 +42,7 @@
         <div class="list flex-row">
           <div v-for="favorite, index in favorites" :key="index" class="favorite-card">
             <div class="favorite-card-img">
-              <img v-bind:src="favorite.restaurant_id | getImageName" alt="">
+              <img v-bind:src="'/shop-images/' + favorite.image_file_name" alt="">
             </div>
             <div class="favorite-card-content">
               <p class="shop-name">{{favorite.name}}</p>
@@ -94,10 +94,6 @@ export default {
     },
     getDate(value) {
       return moment(value).format("YYYY/MM/DD");
-    },
-    getImageName(value) {
-      let imageName = "000" + value;
-      return "/shop-images/" + imageName.slice(-3) + ".jpg";
     },
   },
   methods: {

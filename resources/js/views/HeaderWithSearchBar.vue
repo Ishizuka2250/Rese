@@ -37,8 +37,8 @@ export default {
       area: 'All Area',
       genle: 'All Genle',
       search: '',
-      areas: ['All Area', '東京都'],
-      genles: ['All Genle', '寿司'],
+      areas: [],
+      genles: [],
     }
   },
   mounted() {
@@ -53,6 +53,9 @@ export default {
       const menu = document.getElementById("menu");
       menu.classList.toggle('show');
     });
+
+    this.requestGetGenles();
+    this.requestGetAreas();
   },
   methods: {
     send() {
@@ -63,6 +66,20 @@ export default {
         genle: sendGenle,
         search: this.search
       });
+    },
+    async requestGetGenles() {
+      const genlesResponse = await axios.get(
+        "http://localhost:8000/api/v1/restaurants/genles"
+      );
+      this.genles = ['All Genle'];
+      genlesResponse.data.genles.forEach(v => this.genles.push(v.genle));
+    },
+    async requestGetAreas() {
+      const areasResponse = await axios.get(
+        "http://localhost:8000/api/v1/restaurants/areas"
+      );
+      this.areas = ['All Area'];
+      areasResponse.data.areas.forEach(v => this.areas.push(v.area));
     }
   },
   props: ["csrf"]

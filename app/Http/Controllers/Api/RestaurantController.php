@@ -3,63 +3,18 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Area;
 use App\Models\Restaurant;
 use App\Models\Favorite;
+use App\Models\Genle;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\VarDumper\VarDumper;
 
 class RestaurantController extends Controller
 {
     protected $restaurants;
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index(Request $request)
-    {
-        if($request->has('userid')) {
-            $this->restaurantsAll($request->userid);
-        }else{
-            $this->restaurantsAll(0);
-        }
-        $this->area($request)->genle($request)->searchShopName($request);
-
-        if ($this->restaurants) {
-            return response()->json([
-                'restaurants' => $this->restaurants->get()
-            ], 200);
-        } else {
-            return response()->json([
-                'message' => 'Not found.'
-            ], 200);
-        }
-    }
-
-    private function searchShopName(Request $request)
-    {
-        if ($request->has('search')) {
-            $this->restaurants->where('name', 'like', "%$request->search%");
-        }
-        return $this;
-    }
-
-    private function area(Request $request)
-    {
-        if (($request->has('area')) && ($request->area != 'All Area')) {
-            $this->restaurants->where('area', '=', $request->area);
-        }
-        return $this;
-    }
-
-    private function genle($request)
-    {
-        if (($request->has('genle')) && ($request->genle != 'All Genle')) {
-            $this->restaurants->where('genles', 'like', "%$request->genle%");
-        }
-        return $this;
-    }
 
     private function restaurantsAll(int $UserID)
     {
@@ -80,6 +35,8 @@ class RestaurantController extends Controller
             $this->restaurants = Restaurant::select(
                 'restaurants.id',
                 'restaurants.name',
+                'restaurants.detail',
+                'restaurants.image_file_name',
                 'areas.area',
                 'group_concat_genles.genles',
                 DB::raw('CASE WHEN favorites.user_id IS NOT NULL THEN True ELSE False END AS favorite')
@@ -91,6 +48,8 @@ class RestaurantController extends Controller
             $this->restaurants = Restaurant::select(
                 'restaurants.id',
                 'restaurants.name',
+                'restaurants.detail',
+                'restaurants.image_file_name',
                 'areas.area',
                 'group_concat_genles.genles',
                 DB::raw('False AS favorite')
@@ -99,6 +58,55 @@ class RestaurantController extends Controller
             ->leftjoinsub($groupConcatGenles, 'group_concat_genles', 'restaurants.id', 'group_concat_genles.id');
         }
         return $this;
+    }
+
+    private function searchShopName(Request $request)
+    {
+        if ($request->has('search')) {
+            $this->restaurants->where('name', 'like', "%$request->search%");
+        }
+        return $this;
+    }
+
+    private function searchArea(Request $request)
+    {
+        if (($request->has('area')) && ($request->area != 'All Area')) {
+            $this->restaurants->where('area', '=', $request->area);
+        }
+        return $this;
+    }
+
+    private function searchGenle($request)
+    {
+        if (($request->has('genle')) && ($request->genle != 'All Genle')) {
+            $this->restaurants->where('genles', 'like', "%$request->genle%");
+        }
+        return $this;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        if($request->has('userid')) {
+            $this->restaurantsAll($request->userid);
+        }else{
+            $this->restaurantsAll(0);
+        }
+        $this->searchArea($request)->searchGenle($request)->searchShopName($request);
+
+        if ($this->restaurants) {
+            return response()->json([
+                'restaurants' => $this->restaurants->get()
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Not found.'
+            ], 200);
+        }
     }
 
     /**
@@ -118,9 +126,25 @@ class RestaurantController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+    public function show(Request $request, $value)
     {
-        
+        if ($value == 'genles') {
+            $response = Genle::select('genle')->get();
+        } elseif($value == 'areas') {
+            $response = Area::select('area')->get();
+        }else{
+            $response = null;
+        }
+
+        if ($response) {
+            return response()->json([
+                $value => $response
+            ], 200);
+        }else{
+            return response()->json([
+                'message' => 'Not found.'
+            ]);
+        }
     }
 
     /**
