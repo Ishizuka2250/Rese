@@ -14,7 +14,7 @@
               <p v-for="genle, index in getGenle(restaurant.genles)" :key="index">#{{genle}}</p>
             </div>
             <div class="restaurant-card-footer">
-              <a href="#" class="shop-detail-button">詳しくみる</a>
+              <a v-bind:href="'http://localhost:8000/app/restaurant/' + restaurant.id + '/detail'" class="shop-detail-button">詳しくみる</a>
               <img :src="'/images/heart.png'" class="heart" alt="">
             </div>
           </div>

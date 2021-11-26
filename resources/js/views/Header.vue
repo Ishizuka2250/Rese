@@ -10,7 +10,7 @@
         <nav>
           <a href="/app/home">MyPage</a>
           <a href="/app/restaurant">Restaurant</a>
-          <a v-pre href="/login" style="text-decoration: none" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
+          <a v-pre href="/logout" style="text-decoration: none" onclick="event.preventDefault();document.getElementById('logout-form').submit();">
             Logout
           </a>
           <form id="logout-form" action="/logout" method="POST">

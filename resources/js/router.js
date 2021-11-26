@@ -3,8 +3,9 @@ import VueRouter from 'vue-router';
 import Router from 'vue-router';
 import Home from './views/Home.vue';
 import Restaurant from './views/Restaurant.vue';
+import RestaurantDetail from './views/RestaurantDetail.vue';
 
-Vue.use(Router)
+Vue.use(Router);
 
 const router = new VueRouter({
     mode: 'history',
@@ -20,7 +21,13 @@ const router = new VueRouter({
       name: 'restaurant',
       component: Restaurant,
       props: true
-    }
+    },
+    {
+      path: '/app/restaurant/:id/detail',
+      name: 'restaurant_detail',
+      component: RestaurantDetail,
+      props: true
+    },
 ]
 })
 
