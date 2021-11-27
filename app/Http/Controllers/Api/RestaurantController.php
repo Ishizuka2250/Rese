@@ -68,7 +68,7 @@ class RestaurantController extends Controller
 
     private function searchRestaurantID(Request $request) {
         if ($request->has('id')) {
-            $this->restaurants->where('restaurants.id', $request->id);
+            $this->restaurants->where('restaurants.id', '=', $request->id);
         }
         return $this;
     }

@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Reserve;
+use App\Models\Restaurant;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\DB;
 
 class ReserveController extends Controller
 {
@@ -17,6 +19,7 @@ class ReserveController extends Controller
             ->select(
                 'reserves.id',
                 'reserves.user_id',
+                'reserves.restaurant_id',
                 'restaurants.name',
                 'reserves.number',
                 'reserves.reserve_date',
@@ -33,6 +36,63 @@ class ReserveController extends Controller
         }
         return $this;
     }
+
+    public function searchRestaurantID(Request $request)
+    {
+        if ($request->has('restaurantid')) {
+            $this->Reserves->where('reserves.restaurant_id', '=', $request->restaurantid);
+        }
+        return $this;
+    }
+
+    public function searchReserveDate(Request $request)
+    {
+        if ($request->has('date')) {
+            $this->Reserves->where('reserves.reserve_date', '=', $request->date);
+        }
+        return $this;
+    }
+
+    public function searchReserveTime(Request $request)
+    {
+        if ($request->has('time')) {
+            $this->Reserves->where('reserves.reserve_time', '=', $request->time);
+        }
+        return $this;
+    }
+
+    public function groupBySum($groupKeys, $targetKey)
+    {
+        $selectColumns = $groupKeys;
+        array_push($selectColumns, DB::raw('SUM(' . $targetKey . ') AS total_reserve'));
+        $this->Reserves->select($selectColumns)->groupBy($groupKeys);
+        return $this;
+    }
+
+    public function reservedTotal(Request $request) {
+        $this->reservesAll()
+            ->searchRestaurantID($request)
+            ->searchReserveDate($request)
+            ->searchReserveTime($request)
+            ->groupBySum([
+                'reserves.restaurant_id',
+                'reserves.reserve_date',
+                'reserves.reserve_time'], 'reserves.number');
+        return $this->Reserves->get();
+    }
+
+    public function remaingReservation($targetReserveTime, $reservedTotal, $maxReserve)
+    {
+        foreach($reservedTotal as $reserved)
+        {
+            if ($targetReserveTime === $reserved->reserve_time)
+            {
+                return (int)$maxReserve - (int)$reserved->total_reserve;
+            }
+        }
+        return $maxReserve;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -63,18 +123,35 @@ class ReserveController extends Controller
      * @param  \Illuminate\Http\Request  $request, $UserId
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $reserve, $UserId)
+    public function show(Request $request, $value)
     {
-        // $reserves = null;
-        // if ($reserves) {
-        //     return response()->json([
-        //         'reserves' => $reserves
-        //     ], 200);
-        // } else {
-        //     return response()->json([
-        //         'message' => 'Not found'
-        //     ], 200);
-        // }
+        if($value === 'allow') {
+            $reservedTotal = $this->reservedTotal($request);
+            $restaurant = Restaurant::find($request->restaurantid);
+            $reserve = array();
+            $open = explode(':', $restaurant->open_time)[0];
+            $close = explode(':', $restaurant->close_time)[0];
+            for ($hour = $open; $hour <= $close; $hour++)
+            {
+                array_push($reserve,
+                    array(
+                        'time' => ($hour . ':00'),
+                        'max_reserve' => $this->remaingReservation(
+                            ($hour . ':00:00'),
+                            $reservedTotal,
+                            $restaurant->max_reserve)));
+            }
+        }
+
+        if ($value) {
+            return response()->json([
+                $value => $reserve
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'Not found'
+            ], 200);
+        }
     }
 
     /**
