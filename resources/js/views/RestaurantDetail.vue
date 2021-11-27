@@ -2,7 +2,7 @@
   <div class="container">
     <appHeader :csrf="this.csrf"></appHeader>
     <div class="app-body">
-      <div class="restaurant-detail two-container">
+      <div class="restaurant-detail two-container flex-column">
         <div class="detail-header">
           <div class="prev-button">＜</div>
           <h2 class="restaurant-name">仙人</h2>
@@ -11,30 +11,39 @@
         <p class="shop-area-genles">#東京都 #寿司</p>
         <p class="shop-detail">料理長厳選の食材から作る寿司を用いたコースをぜひお楽しみください。食材・味・価格、お客様の満足度を徹底的に追及したお店です。特別な日のお食事、ビジネス接待まで気軽に使用することができます。</p>
       </div>
-      <div class="reserve-detail two-container">
-        <h2>予約</h2>
-        <input type="date">
-        <input type="text">
-        <input type="text">
-        <div class="reserve-check">
-          <table class="reserve-check-detail">
-            <tr>
-              <th>Shop</th>
-              <td>仙人</td>
-            </tr>
-            <tr>
-              <th>Date</th>
-              <td>2021-04-01</td>
-            </tr>
-            <tr>
-              <th>Time</th>
-              <td>17:00</td>
-            </tr>
-            <tr>
-              <th>Number</th>
-              <td>1人</td>
-            </tr>
-          </table>
+      <div class="reserve-detail two-container flex-column">
+        <div class="reserve-detail-input">
+          <h2>予約</h2>
+          <input class="input date" type="date">
+          <select class="input">
+            <option value=""></option>
+          </select>
+          <select class="input">
+            <option value=""></option>
+          </select>
+          <div class="reserve-check">
+            <table class="reserve-check-detail">
+              <tr>
+                <th>Shop</th>
+                <td>仙人</td>
+              </tr>
+              <tr>
+                <th>Date</th>
+                <td>2021-04-01</td>
+              </tr>
+              <tr>
+                <th>Time</th>
+                <td>17:00</td>
+              </tr>
+              <tr>
+                <th>Number</th>
+                <td>1人</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div class="reserve-button">
+          予約する
         </div>
       </div>
     </div>
@@ -64,12 +73,14 @@ export default {
   justify-content: space-between;
 }
 .two-container {
-  width: 45%;
+  width: 46%;
 }
-.restaurant-detail {
+.flex-column {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+}
+.restaurant-detail > *:not(:last-child) {
+  margin-bottom: 20px;
 }
 .restaurant-detail img {
   width: 100%;
@@ -91,16 +102,64 @@ export default {
   border-radius: 10px;
   box-shadow: 1px 1px 3px #555;
 }
+.prev-button:hover {
+  cursor: pointer;
+}
+.shop-area-genles p:not(:last-of-type) {
+  display: inline-block;
+  margin-right: 10px;
+}
 .reserve-detail {
   background: #305dff;
+  justify-content: space-between;
+  border-radius: 10px;
+  overflow: hidden;
 }
-.reserve-detail tr th {
-  text-align: left;
-  padding-right: 20px;
-  padding-bottom: 20px;
+.reserve-detail-input {
+  padding: 25px;
+  box-sizing: border-box;
+}
+.reserve-detail-input h2 {
+  font-size: 20px;
+  margin-bottom: 25px;
   color: #FFF;
 }
-.reserve-detail tr td {
+.input {
+  display: block;
+  width: 100%;
+  padding: 5px 10px;
+  margin-bottom: 20px;
+  border-radius: 5px;
+  border: none;
+  font-size: 16px;
+}
+.date {
+  width: 180px;
+}
+
+.reserve-check {
+  padding: 20px 10px;
+  background-color: #4c7eff;
+  border-radius: 5px;
+}
+.reserve-check table tr:not(:last-child) th {
+  padding-bottom: 20px;
+}
+.reserve-check table tr th {
+  text-align: left;
+  padding-right: 20px;
+  color: #FFF;
+}
+.reserve-button {
+  text-align: center;
+  background: #0637ff;
+  padding: 20px 0;
+  color: #FFF;
+}
+.reserve-button:hover {
+  cursor: pointer;
+}
+.reserve-check table tr td {
   color: #FFF;
 }
 
