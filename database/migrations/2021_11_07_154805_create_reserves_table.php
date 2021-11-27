@@ -18,7 +18,8 @@ class CreateReservesTable extends Migration
             $table->unsignedBigInteger('user_id')->nullable(false);
             $table->unsignedBigInteger('restaurant_id')->nullable(false);
             $table->unsignedInteger('number')->nullable(false);
-            $table->dateTime('reserve_date')->nullable(false);
+            $table->date('reserve_date')->nullable(false);
+            $table->time('reserve_time')->nullable(false);
             $table->timestamps();
         });
     }

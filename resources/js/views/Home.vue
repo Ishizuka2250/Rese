@@ -23,11 +23,11 @@
               </tr>
               <tr>
                 <th>Date</th>
-                <td>{{reserve.reserve_date | getDate}}</td>
+                <td>{{reserve.reserve_date}}</td>
               </tr>
               <tr>
                 <th>Time</th>
-                <td>{{reserve.reserve_date | getTime}}</td>
+                <td>{{reserve.reserve_time}}</td>
               </tr>
               <tr>
                 <th>Number</th>
@@ -80,21 +80,13 @@ export default {
   },
   async mounted() {
     const reservesResponse = await axios.get(
-      "http://localhost:8000/api/v1/reserves/" + this.id
+      "http://localhost:8000/api/v1/reserves/?userid=" + this.id
     );
     this.reserves = reservesResponse.data.reserves;
     const favoritesResponse = await axios.get(
       "http://localhost:8000/api/v1/favorites/" + this.id
     );
     this.favorites = favoritesResponse.data.favorites;
-  },
-  filters: {
-    getTime(value) {
-      return moment(value).format("kk:mm");
-    },
-    getDate(value) {
-      return moment(value).format("YYYY/MM/DD");
-    },
   },
   methods: {
     getGenle(value) {

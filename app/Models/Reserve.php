@@ -10,7 +10,7 @@ class Reserve extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'user_id', 'restaurant_id', 'reserve_date'
+        'user_id', 'restaurant_id', 'reserve_date', 'reserve_time'
     ];
     protected $guarded = array(
         'id'
@@ -19,6 +19,7 @@ class Reserve extends Model
         'user_id' => 'required',
         'restaurant_id' => 'required',
         'number' => 'required',
-        'reserve_date' => 'required'
+        'reserve_date' => 'required',
+        'reserve_time' => 'required'
     );
 }
