@@ -1,6 +1,6 @@
 <template>
-  <header class="header">
-    <div>
+  <header>
+    <div class="header-main">
       <img v-bind:src="'/images/header_img.png'" class="header-menu" alt="" id="header-open">
       <h1 class="header-title">Rese</h1>
     </div>
@@ -42,10 +42,10 @@ export default {
 </script>
 
 <style scoped>
-.header{
+.header-main {
   display: flex;
   align-items: center;
-  margin: 50px 0 50px 0px;
+  margin-bottom: 50px;
 }
 .header-menu {
   display: inline-block;

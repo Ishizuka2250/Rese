@@ -110,7 +110,7 @@ export default {
   cursor: pointer;
 }
 .header{
-  margin: 50px 0 50px 0px;
+  margin-bottom: 50px;
 }
 .header-content {
   width: 100%;
@@ -119,7 +119,8 @@ export default {
   justify-content: space-between;
 }
 .header-main {
-  display: inline-block;
+  display: flex;
+  align-items: center;
 }
 .header-menu {
   display: inline-block;

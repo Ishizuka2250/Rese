@@ -74,7 +74,7 @@ export default {
 
 <style scoped>
 .container {
-  margin: 0 80px 80px 80px;
+  margin: 40px 80px 80px 80px;
 }
 .restaurants {
   width: 100%;
