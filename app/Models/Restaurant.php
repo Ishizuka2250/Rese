@@ -10,16 +10,25 @@ class Restaurant extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'area_id', 'detail', 'image_file_name'
+        'name',
+        'detail',
+        'image_file_name',
+        'area_id',
+        'open_time',
+        'close_time',
+        'max_reserve'
     ];
     protected $guarded = array(
         'id'
     );
     public static $rules = array(
         'name' => 'required',
-        'area_id' => 'required',
         'detail' => 'required',
-        'image_file_name' => 'required'
+        'image_file_name' => 'required',
+        'area_id' => 'required',
+        'open_time' => 'required',
+        'close_time' => 'required',
+        'max_reserve'
     );
 }
 

@@ -28,7 +28,7 @@
             <table class="reserve-check-detail">
               <tr>
                 <th>Shop</th>
-                <td>仙人</td>
+                <td>{{restaurantDetail.name}}</td>
               </tr>
               <tr>
                 <th>Date</th>

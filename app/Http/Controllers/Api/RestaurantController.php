@@ -38,6 +38,9 @@ class RestaurantController extends Controller
                 'restaurants.detail',
                 'restaurants.image_file_name',
                 'areas.area',
+                'restaurants.open_time',
+                'restaurants.close_time',
+                'restaurants.max_reserve',
                 'group_concat_genles.genles',
                 DB::raw('CASE WHEN favorites.user_id IS NOT NULL THEN True ELSE False END AS favorite')
             )
@@ -51,6 +54,9 @@ class RestaurantController extends Controller
                 'restaurants.detail',
                 'restaurants.image_file_name',
                 'areas.area',
+                'restaurants.open_time',
+                'restaurants.close_time',
+                'restaurants.max_reserve',
                 'group_concat_genles.genles',
                 DB::raw('False AS favorite')
             )

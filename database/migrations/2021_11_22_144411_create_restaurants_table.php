@@ -19,6 +19,9 @@ class CreateRestaurantsTable extends Migration
             $table->string('detail')->nullable(false);
             $table->string('image_file_name')->nullable(false);
             $table->unsignedBigInteger('area_id')->nullable(false);
+            $table->time('open_time')->nullable(false);
+            $table->time('close_time')->nullable(false);
+            $table->unsignedInteger('max_reserve')->nullable(false);
             $table->timestamps();
         });
     }
