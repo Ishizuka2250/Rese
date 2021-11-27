@@ -16,7 +16,7 @@ class RestaurantController extends Controller
 {
     protected $restaurants;
 
-    private function restaurantsAll(int $UserID)
+    private function restaurantsAll(int $UserID = 0)
     {
         $groupConcatGenles = DB::table('restaurant_genles')
             ->select(
@@ -60,7 +60,13 @@ class RestaurantController extends Controller
         return $this;
     }
 
-    private function searchShopName(Request $request)
+    private function searchRestaurantID(Request $request) {
+        if ($request->has('id')) {
+            $this->restaurants->where('restaurants.id', $request->id);
+        }
+        return $this;
+    }
+    private function searchRestaurantName(Request $request)
     {
         if ($request->has('search')) {
             $this->restaurants->where('name', 'like', "%$request->search%");
@@ -96,7 +102,7 @@ class RestaurantController extends Controller
         }else{
             $this->restaurantsAll(0);
         }
-        $this->searchArea($request)->searchGenle($request)->searchShopName($request);
+        $this->searchArea($request)->searchGenle($request)->searchRestaurantName($request);
 
         if ($this->restaurants) {
             return response()->json([
@@ -132,7 +138,10 @@ class RestaurantController extends Controller
             $response = Genle::select('genle')->get();
         } elseif($value == 'areas') {
             $response = Area::select('area')->get();
-        }else{
+        } elseif($value == 'details') {
+            $this->restaurantsAll()->searchRestaurantID($request);
+            $response = $this->restaurants->get();
+        } else {
             $response = null;
         }
 

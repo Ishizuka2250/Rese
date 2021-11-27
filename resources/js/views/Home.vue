@@ -98,7 +98,7 @@ export default {
   },
   methods: {
     getGenle(value) {
-      return value.split(",")
+      return value || undefined ? value.split(',') : '';
     }
   },
   props: ["userinfo", "csrf"],

@@ -4,12 +4,15 @@
     <div class="app-body">
       <div class="restaurant-detail two-container flex-column">
         <div class="detail-header">
-          <div class="prev-button">＜</div>
-          <h2 class="restaurant-name">仙人</h2>
+          <a href="/app/restaurant" class="prev-button">＜</a>
+          <h2 class="restaurant-name">{{restaurantDetail.name}}</h2>
         </div>
-        <img v-bind:src="'/shop-images/sushi.jpg'" alt="">
-        <p class="shop-area-genles">#東京都 #寿司</p>
-        <p class="shop-detail">料理長厳選の食材から作る寿司を用いたコースをぜひお楽しみください。食材・味・価格、お客様の満足度を徹底的に追及したお店です。特別な日のお食事、ビジネス接待まで気軽に使用することができます。</p>
+        <img v-if="restaurantDetail.image_file_name" v-bind:src="'/shop-images/' + restaurantDetail.image_file_name" alt="">
+        <div class="shop-area-genles">
+          <p>#{{restaurantDetail.area}}</p>
+          <p v-for="genle, index in getGenle(restaurantDetail.genles)" :key="index">#{{genle}}</p>
+        </div>
+        <p class="shop-detail">{{restaurantDetail.detail}}</p>
       </div>
       <div class="reserve-detail two-container flex-column">
         <div class="reserve-detail-input">
@@ -52,9 +55,26 @@
 
 <script>
 import header from './Header.vue';
+import axios from 'axios';
 export default {
+  data() {
+    return {
+      restaurantDetail: []
+    }
+  },
   components: {
     appHeader: header
+  },
+  async mounted() {
+    const restaurantDetailResponse = await axios.get(
+      'http://localhost:8000/api/v1/restaurants/details?id=' + this.$route.params.id
+    );
+    this.restaurantDetail = restaurantDetailResponse.data.details[0];
+  },
+  methods: {
+    getGenle(value) {
+      return value || undefined ? value.split(',') : '';
+    }
   },
   props: ["userinfo", "csrf"],
 }
@@ -101,12 +121,16 @@ export default {
   text-align: center;
   border-radius: 10px;
   box-shadow: 1px 1px 3px #555;
+  text-decoration: none;
+  font-weight: bold;
 }
 .prev-button:hover {
   cursor: pointer;
 }
-.shop-area-genles p:not(:last-of-type) {
+.shop-area-genles > p {
   display: inline-block;
+}
+.shop-area-genles p:not(:last-of-type) {
   margin-right: 10px;
 }
 .reserve-detail {
@@ -136,7 +160,6 @@ export default {
 .date {
   width: 180px;
 }
-
 .reserve-check {
   padding: 20px 10px;
   background-color: #4c7eff;
