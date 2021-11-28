@@ -17,12 +17,16 @@
       <div class="reserve-detail two-container flex-column">
         <div class="reserve-detail-input">
           <h2>予約</h2>
-          <input class="input date" type="date">
-          <select class="input">
-            <option value=""></option>
+          <input class="input date" type="date" v-model="selectReserveDate" v-on:change="getReservationAllow()">
+          <select id="reserveTime" class="input" v-model="selectReserveTime" v-on:change="reservationNumberUpdate()">
+            <option :value="null" disabled>予約時間を選択してください。</option>
+            <option v-for="time,index in getReservationTime()" :key="index" v-bind:value="time">
+              {{time}}
+            </option>
           </select>
-          <select class="input">
-            <option value=""></option>
+          <select id="reserveNumber" class="input" v-model="selectReserveNumber">
+            <option :value="null" disabled>予約人数を選択してください。</option>
+            <option v-for="num in this.maxReserveNumber" :key="num" v-bind:value="num">{{num}}</option>
           </select>
           <div class="reserve-check">
             <table class="reserve-check-detail">
@@ -32,15 +36,18 @@
               </tr>
               <tr>
                 <th>Date</th>
-                <td>2021-04-01</td>
+                <td v-if="this.selectReserveDate">{{this.selectReserveDate}}</td>
+                <td v-else></td>
               </tr>
               <tr>
                 <th>Time</th>
-                <td>17:00</td>
+                <td v-if="this.selectReserveTime">{{this.selectReserveTime}}</td>
+                <td v-else></td>
               </tr>
               <tr>
                 <th>Number</th>
-                <td>1人</td>
+                <td v-if="this.selectReserveNumber">{{this.selectReserveNumber}}</td>
+                <td v-else></td>
               </tr>
             </table>
           </div>
@@ -56,10 +63,16 @@
 <script>
 import header from './Header.vue';
 import axios from 'axios';
+import moment from 'moment';
 export default {
   data() {
     return {
-      restaurantDetail: []
+      selectReserveDate: '',
+      selectReserveTime: '',
+      selectReserveNumber: 0,
+      maxReserveNumber: 0,
+      restaurantDetail: [],
+      reservationAllow: []
     }
   },
   components: {
@@ -70,11 +83,33 @@ export default {
       'http://localhost:8000/api/v1/restaurants/details?id=' + this.$route.params.id
     );
     this.restaurantDetail = restaurantDetailResponse.data.details[0];
+    this.selectReserveDate = moment().format('YYYY-MM-DD');
+    this.getReservationAllow();
   },
   methods: {
     getGenle(value) {
       return value || undefined ? value.split(',') : '';
-    }
+    },
+    reservationNumberUpdate () {
+      Object.keys(this.reservationAllow).forEach(key => {
+        if (this.reservationAllow[key].time == this.selectReserveTime) {
+          this.maxReserveNumber = this.reservationAllow[key].max_reserve > 5 ? 5 : this.reservationAllow[key].max_reserve;
+        }
+      })
+    },
+    async getReservationAllow() {
+      const reservationAllowResponse = await axios.get(
+      'http://localhost:8000/api/v1/reserves/allow?restaurantid=' + this.restaurantDetail.id + '&date=' + this.selectReserveDate
+      );
+      this.reservationAllow = reservationAllowResponse.data.allow;
+    },
+    getReservationTime() {
+      const reservationTime = [];
+      Object.keys(this.reservationAllow).forEach(key => {
+        this.reservationAllow[key].max_reserve > 0 ? reservationTime.push(this.reservationAllow[key].time) : ''
+      });
+      return reservationTime;
+    },
   },
   props: ["userinfo", "csrf"],
 }
