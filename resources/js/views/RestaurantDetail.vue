@@ -17,14 +17,14 @@
       <div class="reserve-detail two-container flex-column">
         <div class="reserve-detail-input">
           <h2>予約</h2>
-          <input class="input date" type="date" v-model="selectReserveDate" v-on:change="getReservationAllow()">
-          <select id="reserveTime" class="input" v-model="selectReserveTime" v-on:change="reservationNumberUpdate()">
+          <input class="input date" type="date" v-model="selectReserveDate" v-on:change="getReservationAllow()" required>
+          <select id="reserveTime" class="input" v-model="selectReserveTime" v-on:change="reservationNumberUpdate()" required>
             <option :value="null" disabled>予約時間を選択してください。</option>
-            <option v-for="time,index in getReservationTime()" :key="index" v-bind:value="time">
+            <option v-for="time, index in getReservationTime()" :key="index" v-bind:value="time">
               {{time}}
             </option>
           </select>
-          <select id="reserveNumber" class="input" v-model="selectReserveNumber">
+          <select id="reserveNumber" class="input" v-model="selectReserveNumber" required>
             <option :value="null" disabled>予約人数を選択してください。</option>
             <option v-for="num in this.maxReserveNumber" :key="num" v-bind:value="num">{{num}}</option>
           </select>
@@ -52,7 +52,7 @@
             </table>
           </div>
         </div>
-        <div class="reserve-button">
+        <div class="reserve-button" v-on:click="postReservation()">
           予約する
         </div>
       </div>
@@ -67,6 +67,7 @@ import moment from 'moment';
 export default {
   data() {
     return {
+      userid: this.userinfo.id,
       selectReserveDate: '',
       selectReserveTime: '',
       selectReserveNumber: 0,
@@ -90,7 +91,7 @@ export default {
     getGenle(value) {
       return value || undefined ? value.split(',') : '';
     },
-    reservationNumberUpdate () {
+    reservationNumberUpdate() {
       Object.keys(this.reservationAllow).forEach(key => {
         if (this.reservationAllow[key].time == this.selectReserveTime) {
           this.maxReserveNumber = this.reservationAllow[key].max_reserve > 5 ? 5 : this.reservationAllow[key].max_reserve;
@@ -99,7 +100,8 @@ export default {
     },
     async getReservationAllow() {
       const reservationAllowResponse = await axios.get(
-      'http://localhost:8000/api/v1/reserves/allow?restaurantid=' + this.restaurantDetail.id + '&date=' + this.selectReserveDate
+        'http://localhost:8000/api/v1/reserves/allow?restaurantid=' + this.restaurantDetail.id
+          + '&date=' + this.selectReserveDate
       );
       this.reservationAllow = reservationAllowResponse.data.allow;
     },
@@ -110,6 +112,31 @@ export default {
       });
       return reservationTime;
     },
+    async postReservation() {
+      if (this.selectReserveNumber < 1) {
+        alert('予約人数が入力されていません.');
+        return;
+      } else if (this.reserve_time) {
+        alert('予約時間を選択してください.');
+      }
+      axios.post(
+        'http://localhost:8000/api/v1/reserves/', {
+          user_id: this.userid,
+          restaurant_id: this.restaurantDetail.id,
+          number: this.selectReserveNumber,
+          reserve_date: this.selectReserveDate,
+          reserve_time: this.selectReserveTime
+          }
+      ).then(
+        function (response) {
+          alert(response.data.message);
+        }
+      ).catch(
+        function(error) {
+          console.log(error);
+        }
+      );
+    }
   },
   props: ["userinfo", "csrf"],
 }

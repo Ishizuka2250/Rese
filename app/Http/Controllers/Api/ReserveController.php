@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Reserve;
 use App\Models\Restaurant;
 use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class ReserveController extends Controller
 {
@@ -29,34 +29,34 @@ class ReserveController extends Controller
         return $this;
     }
 
-    public function searchUserID(Request $request)
+    public function searchUserID($UserID)
     {
-        if ($request->has('userid')) {
-            $this->Reserves->where('reserves.user_id', '=', $request->userid);
+        if ($UserID) {
+            $this->Reserves->where('reserves.user_id', '=', $UserID);
         }
         return $this;
     }
 
-    public function searchRestaurantID(Request $request)
+    public function searchRestaurantID($RestaurantID)
     {
-        if ($request->has('restaurantid')) {
-            $this->Reserves->where('reserves.restaurant_id', '=', $request->restaurantid);
+        if ($RestaurantID) {
+            $this->Reserves->where('reserves.restaurant_id', '=', $RestaurantID);
         }
         return $this;
     }
 
-    public function searchReserveDate(Request $request)
+    public function searchReserveDate($ReserveDate)
     {
-        if ($request->has('date')) {
-            $this->Reserves->where('reserves.reserve_date', '=', $request->date);
+        if ($ReserveDate) {
+            $this->Reserves->where('reserves.reserve_date', '=', $ReserveDate);
         }
         return $this;
     }
 
-    public function searchReserveTime(Request $request)
+    public function searchReserveTime($ReserveTime)
     {
-        if ($request->has('time')) {
-            $this->Reserves->where('reserves.reserve_time', '=', $request->time);
+        if ($ReserveTime) {
+            $this->Reserves->where('reserves.reserve_time', '=', $ReserveTime);
         }
         return $this;
     }
@@ -69,11 +69,11 @@ class ReserveController extends Controller
         return $this;
     }
 
-    public function reservedTotal(Request $request) {
+    public function reservationTotal($RestaurantID = null, $ReserveDate = null, $ReserveTime = null) {
         $this->reservesAll()
-            ->searchRestaurantID($request)
-            ->searchReserveDate($request)
-            ->searchReserveTime($request)
+            ->searchRestaurantID($RestaurantID)
+            ->searchReserveDate($ReserveDate)
+            ->searchReserveTime($ReserveTime)
             ->groupBySum([
                 'reserves.restaurant_id',
                 'reserves.reserve_date',
@@ -93,42 +93,13 @@ class ReserveController extends Controller
         return $maxReserve;
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index(Request $request)
+    public function currentReservation($RestaurantID, $ReserveDate)
     {
-        $this->reservesAll()->searchUserID($request);
-        return response()->json([
-            'reserves' => $this->Reserves->get()
-        ], 200);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \Illuminate\Http\Request  $request, $UserId
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Request $request, $value)
-    {
-        if($value === 'allow') {
-            $reservedTotal = $this->reservedTotal($request);
-            $restaurant = Restaurant::find($request->restaurantid);
-            $reserve = array();
+        $reservedTotal = $this->reservationTotal($RestaurantID, $ReserveDate);
+        $restaurant = Restaurant::find($RestaurantID);
+        $reserve = array();
+        if($restaurant)
+        {
             $open = explode(':', $restaurant->open_time)[0];
             $close = explode(':', $restaurant->close_time)[0];
             for ($hour = $open; $hour <= $close; $hour++)
@@ -142,10 +113,100 @@ class ReserveController extends Controller
                             $restaurant->max_reserve)));
             }
         }
+        return $reserve;
+    }
 
-        if ($value) {
+    public function reserveNumberCheck($RestaurantID, $ReserveDate, $ReserveTime, $ReserveNumber)
+    {
+        $currentReserve = $this->currentReservation($RestaurantID, $ReserveDate);
+        foreach($currentReserve as $reserve)
+        {
+            if (($reserve['time'] === $ReserveTime) && ($reserve['max_reserve'] >= (int)$ReserveNumber)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        $this->reservesAll()->searchUserID($request->userid);
+        return response()->json([
+            'reserves' => $this->Reserves->get()
+        ], 200);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $validate = Validator::make($request->all(), Reserve::$rules);
+        
+        if ($validate->fails()) {
             return response()->json([
-                $value => $reserve
+                'success' => 0,
+                'errorcode' => 1,
+                'message' => $request->date
+            ], 400);
+        }
+
+        $this->reservesAll()
+            ->searchUserID($request->user_id)
+            ->searchRestaurantID($request->restaurant_id)
+            ->searchReserveDate($request->reserve_date)
+            ->searchReserveTime($request->reserve_time);
+        
+        if ($this->Reserves->get()->count() > 0)
+        {
+            return response()->json([
+                'success' => 0,
+                'errorcode' => 2,
+                'message' => '同じ時刻で既に予約が入っています.'
+            ], 200);
+        }
+
+        if (! $this->reserveNumberCheck(
+            $request->restaurant_id,
+            $request->reserve_date,
+            $request->reserve_time,
+            $request->number))
+        {
+            return response()->json([
+                'success' => 0,
+                'errorcode' => 3,
+                'message' => '満席のため予約できません.'
+            ], 200);
+        }
+        
+        Reserve::create($request->all());
+
+        return response()->json([
+            'success' => 1,
+            'errorcode' => 0,
+            'message' => '予約が完了しました.'
+        ], 201);
+        
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \Illuminate\Http\Request  $request, $UserId
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Request $request, $value)
+    {
+        if ($value == 'allow') {
+            return response()->json([
+                $value => $this->currentReservation($request->restaurantid, $request->date)
             ], 200);
         } else {
             return response()->json([
