@@ -12,9 +12,10 @@
             <div class="reserve-card-header">
               <div class="reserve-name">
                 <img v-bind:src="'/images/clock.png'" alt="" class="reserve-card-img">
-                <p>予約1</p>
+                <p>予約{{(index + 1)}}</p>
               </div>
-              <img v-bind:src="'/images/cancel.png'" class="reserve-card-img" alt="">
+              <img v-bind:src="'/images/cancel.png'" alt="" class="reserve-card-img"
+                v-on:click="postDeleteReserve(reserve.id)">
             </div>
             <table class="reserve-detail">
               <tr>
@@ -27,7 +28,7 @@
               </tr>
               <tr>
                 <th>Time</th>
-                <td>{{reserve.reserve_time}}</td>
+                <td>{{hourMinuite(reserve.reserve_time)}}</td>
               </tr>
               <tr>
                 <th>Number</th>
@@ -79,18 +80,43 @@ export default {
     }
   },
   async mounted() {
-    const reservesResponse = await axios.get(
-      "http://localhost:8000/api/v1/reserves/?userid=" + this.id
-    );
-    this.reserves = reservesResponse.data.reserves;
-    const favoritesResponse = await axios.get(
-      "http://localhost:8000/api/v1/favorites/" + this.id
-    );
-    this.favorites = favoritesResponse.data.favorites;
+    this.getReserves();
+    this.getFavorites();
   },
   methods: {
     getGenle(value) {
       return value || undefined ? value.split(',') : '';
+    },
+    hourMinuite(value) {
+      const splitedValue = String(value).split(':');
+      return splitedValue[0] + ':' + splitedValue[1];
+    },
+    async getReserves() {
+      const reservesResponse = await axios.get(
+        "http://localhost:8000/api/v1/reserves/?userid=" + this.id
+      );
+    this.reserves = reservesResponse.data.reserves;
+    },
+    async getFavorites() {
+      const favoritesResponse = await axios.get(
+        "http://localhost:8000/api/v1/favorites/" + this.id
+      );
+      this.favorites = favoritesResponse.data.favorites;
+    },
+    async postDeleteReserve(ReserveID) {
+      if (window.confirm('予約を削除しますか？')) {
+        await axios.request({
+          method: 'delete',
+          url: 'http://localhost:8000/api/v1/reserves/delete',
+          data: {reserve_id: ReserveID}
+        }).then(function(response) {
+          alert(response.data.message);
+        }).catch(function(error) {
+          alert(error);
+        });
+        this.getReserves();
+      }
+
     }
   },
   props: ["userinfo", "csrf"],

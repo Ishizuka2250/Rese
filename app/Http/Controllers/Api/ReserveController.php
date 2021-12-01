@@ -8,6 +8,7 @@ use App\Models\Restaurant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\VarDumper\VarDumper;
 
 class ReserveController extends Controller
 {
@@ -154,7 +155,7 @@ class ReserveController extends Controller
             return response()->json([
                 'success' => 0,
                 'errorcode' => 1,
-                'message' => $request->date
+                'message' => $validate->errors()
             ], 400);
         }
 
@@ -233,8 +234,38 @@ class ReserveController extends Controller
      * @param  \App\Models\Reserve  $reserve
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Reserve $reserve)
+    public function destroy(Request $request, $value)
     {
-        //
+        if($value != 'delete') return;
+        $validate = Validator::make($request->all(), [
+            'reserve_id' => ['required', 'numeric'],
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => 0,
+                'errorcode' => 1,
+                'message' => $request->all()
+            ], 400);
+        }
+
+        $reserve = Reserve::find($request->reserve_id);
+        
+        if ($reserve) {
+            Reserve::destroy($request->reserve_id);
+            return response()->json([
+                'success' => 1,
+                'errorcode' => 0,
+                'message' => '対象の予約を削除しました.'
+            ]);
+        } else {
+            return response()->json([
+                'success' => 0,
+                'errorcode' => 2,
+                'message' => '対象の予約が存在しません.',
+                'request' => $request->all()
+            ]);
+        }
+        
     }
 }

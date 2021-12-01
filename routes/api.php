@@ -24,5 +24,5 @@ use App\Http\Controllers\Api\RestaurantController;
 Route::apiResource('/v1/reserves', ReserveController::class);
 Route::apiResource('/v1/favorites', FavoriteController::class);
 Route::apiResource('/v1/restaurants', RestaurantController::class);
-Route::apiResource('/v1/restaurants/{restaurantID}/genles', RestaurantGenleController::class);
+//Route::apiResource('/v1/restaurants/{restaurantID}/genles', RestaurantGenleController::class);
 
