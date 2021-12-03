@@ -98,7 +98,7 @@ export default {
     },
     async callAPIGetFavorite() {
       const favoritesResponse = await axios.get(
-        "http://localhost:8000/api/v1/favorites/" + this.id
+        "http://localhost:8000/api/v1/favorites/?user_id=" + this.id
       );
       this.favorites = favoritesResponse.data.favorites;
     },

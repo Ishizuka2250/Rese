@@ -15,7 +15,8 @@
             </div>
             <div class="restaurant-card-footer">
               <a v-bind:href="'http://localhost:8000/app/restaurant/' + restaurant.id + '/detail'" class="shop-detail-button">詳しくみる</a>
-              <img :src="'/images/heart_gray.png'" class="heart" alt="">
+              <img v-if="restaurant.favorite" :src="'/images/heart_red.png'" class="heart" alt="">
+              <img v-else :src="'/images/heart_gray.png'" class="heart" alt="">
             </div>
           </div>
         </div>
@@ -129,5 +130,8 @@ export default {
   display: inline-block;
   width: 30px;
   height: 30px;
+}
+.heart:hover {
+  cursor: pointer;
 }
 </style>
