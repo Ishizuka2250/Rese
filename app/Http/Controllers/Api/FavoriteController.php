@@ -7,6 +7,7 @@ use App\Models\Favorite;
 use App\Models\Restaurant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class FavoriteController extends Controller
 {
@@ -48,6 +49,13 @@ class FavoriteController extends Controller
         return $this;
     }
 
+    public function searchRestaurantID($RestaurantID) {
+        if ($RestaurantID) {
+            $this->Favorites->where('favorites.restaurant_id', '=', $RestaurantID);
+        }
+        return $this;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -56,13 +64,14 @@ class FavoriteController extends Controller
     public function index(Request $request)
     {
         $this->favoritesAll()
-            ->searchUserID($request->user_id);
+            ->searchUserID($request->user_id)
+            ->searchRestaurantID($request->restaurant_id);
 
         if ($request->user_id) {
             return response()->json([
                 'favorites' => $this->Favorites->get()
                 ], 200);
-        }else{
+        } else {
             return response()->json([
                 'message' => 'Not found.'
             ], 200);
@@ -77,7 +86,35 @@ class FavoriteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validate = Validator::make($request->all(), Favorite::$rules);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => 0,
+                'errorcode' => 1,
+                'message' => $validate->errors()
+            ], 400);
+        }
+
+        $this->favoritesAll()
+            ->searchUserID($request->user_id)
+            ->searchRestaurantID($request->restaurant_id);
+
+        if ($this->Favorites->get()->count() > 0) {
+            return response()->json([
+                'success' => 0,
+                'errorcode' => 2,
+                'message' => '既にお気に入り登録されています.'
+            ], 200);
+        }
+
+        Favorite::create($request->all());
+
+        return response()->json([
+            'success' => 1,
+            'errorcode' => 0,
+            'message' => 'お気に入り登録が完了しました.'
+        ], 201);
     }
 
     /**
@@ -108,8 +145,36 @@ class FavoriteController extends Controller
      * @param  \App\Models\Favorite  $favorite
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Favorite $favorite)
+    public function destroy(Request $request, $value)
     {
-        //
+        if ($value != 'delete') return;
+        $validate = Validator::make($request->all(), [
+            'favorite_id' => ['required', 'numeric']
+        ]);
+
+        if ($validate->fails()) {
+            return response()->json([
+                'success' => 0,
+                'errorcode' => 1,
+                'message' => $validate->errors()
+            ], 400);
+        }
+
+        $favorite = Favorite::find($request->favorite_id);
+
+        if ($favorite) {
+            Favorite::destroy($request->favorite_id);
+            return response()->json([
+                'success' => 1,
+                'errorcode' => 0,
+                'message' => '対象のお気に入りを削除しました.'
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => 0,
+                'errorcode' => 2,
+                'message' => '対象のお気に入りが存在しません.'
+            ], 200);
+        }
     }
 }

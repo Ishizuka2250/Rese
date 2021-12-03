@@ -15,7 +15,7 @@ class Favorite extends Model
         'id'
     );
     public static $rules = Array(
-        'user_id' => 'required',
-        'restaurant_id' => 'required'
+        'user_id' => ['required', 'numeric'],
+        'restaurant_id' => ['required', 'numeric']
     );
 }

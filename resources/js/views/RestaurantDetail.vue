@@ -123,13 +123,14 @@ export default {
         alert('予約時間を選択してください.');
       }
       axios.post(
-        'http://localhost:8000/api/v1/reserves/', {
+        'http://localhost:8000/api/v1/reserves/',
+        {
           user_id: this.userid,
           restaurant_id: this.restaurantDetail.id,
           number: this.selectReserveNumber,
           reserve_date: this.selectReserveDate,
           reserve_time: this.selectReserveTime
-          }
+        }
       ).then(
         function (response) {
           alert(response.data.message);

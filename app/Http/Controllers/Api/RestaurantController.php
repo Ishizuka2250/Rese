@@ -5,12 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Area;
 use App\Models\Restaurant;
-use App\Models\Favorite;
 use App\Models\Genle;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Symfony\Component\VarDumper\VarDumper;
 
 class RestaurantController extends Controller
 {
@@ -28,6 +25,7 @@ class RestaurantController extends Controller
         if ($UserID) {
             $favorites = DB::table('favorites')
             ->select(
+                'favorites.id',
                 'favorites.restaurant_id',
                 'favorites.user_id'
             )->where('favorites.user_id', $UserID);
@@ -42,7 +40,7 @@ class RestaurantController extends Controller
                 'restaurants.close_time',
                 'restaurants.max_reserve',
                 'group_concat_genles.genles',
-                DB::raw('CASE WHEN favorites.user_id IS NOT NULL THEN True ELSE False END AS favorite')
+                DB::raw('CASE WHEN favorites.id IS NOT NULL THEN favorites.id ELSE 0 END AS favorite_id')
             )
             ->leftjoin('areas', 'restaurants.area_id', '=', 'areas.id')
             ->leftjoinsub($groupConcatGenles, 'group_concat_genles', 'restaurants.id', 'group_concat_genles.id')
@@ -58,7 +56,7 @@ class RestaurantController extends Controller
                 'restaurants.close_time',
                 'restaurants.max_reserve',
                 'group_concat_genles.genles',
-                DB::raw('False AS favorite')
+                DB::raw('0 AS favorite_id')
             )
             ->leftjoin('areas', 'restaurants.area_id', '=', 'areas.id')
             ->leftjoinsub($groupConcatGenles, 'group_concat_genles', 'restaurants.id', 'group_concat_genles.id');
@@ -108,11 +106,16 @@ class RestaurantController extends Controller
         }else{
             $this->restaurantsAll(0);
         }
-        $this->searchArea($request)->searchGenle($request)->searchRestaurantName($request);
+        $this->searchArea($request)
+            ->searchGenle($request)
+            ->searchRestaurantName($request);
 
         if ($this->restaurants) {
             return response()->json([
-                'restaurants' => $this->restaurants->get()
+                'restaurants'
+                    => $this->restaurants
+                        ->orderby('restaurants.id')
+                        ->get()
             ], 200);
         } else {
             return response()->json([

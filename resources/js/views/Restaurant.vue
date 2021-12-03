@@ -15,8 +15,10 @@
             </div>
             <div class="restaurant-card-footer">
               <a v-bind:href="'http://localhost:8000/app/restaurant/' + restaurant.id + '/detail'" class="shop-detail-button">詳しくみる</a>
-              <img v-if="restaurant.favorite" :src="'/images/heart_red.png'" class="heart" alt="">
-              <img v-else :src="'/images/heart_gray.png'" class="heart" alt="">
+              <img v-if="isFavorite(restaurant.favorite_id)" :src="'/images/heart_red.png'" class="heart" alt=""
+                v-on:click="updateFavorite(userid, index)">
+              <img v-else :src="'/images/heart_gray.png'" class="heart" alt=""
+                v-on:click="updateFavorite(userid, index)">
             </div>
           </div>
         </div>
@@ -34,9 +36,10 @@ export default {
   },
   data() {
     return {
-      id: this.userinfo.id,
-      user: this.userinfo.name,
-      restaurants: []
+      userid: this.userinfo.id,
+      username: this.userinfo.name,
+      restaurants: [],
+      favorites: []
     }
   },
   mounted() {
@@ -49,16 +52,69 @@ export default {
     splitCSV(value) {
       return value || undefined ? value.split(',') : '';
     },
+    isFavorite(FavoriteID) {
+      return FavoriteID > 0 ? true : false;
+    },
     async callAPIGetRestaurant(params={}) {
-      let requestParameter = '?userid=' + this.id;
-      Object.keys(params).forEach((key) => {
+      let requestParameter = '?userid=' + this.userid;
+      Object.keys(params).forEach(key => {
         requestParameter = params[key] != '' ? requestParameter + '&' + key + '=' + params[key] : requestParameter;
       });
       const restaurantsResponse = await axios.get(
         "http://localhost:8000/api/v1/restaurants/" + requestParameter
       );
       this.restaurants = restaurantsResponse.data.restaurants;
-    }
+    },
+    async getNewFavoriteID(UserID, RestaurantID) {
+      await this.callAPIGetFavorite(UserID, RestaurantID);
+      return this.favorites[0] || undefined ? this.favorites[0].id : 0;
+    },
+    async updateFavorite(UserID, Index) {
+      if (this.isFavorite(this.restaurants[Index].favorite_id)) {
+        await this.callAPIDeleteFavorite(this.restaurants[Index].favorite_id)
+        this.restaurants[Index].favorite_id = 0;
+      } else {
+        this.callAPIPostFavorite(UserID, this.restaurants[Index].id);
+        this.restaurants[Index].favorite_id = await this.getNewFavoriteID(UserID, this.restaurants[Index].id);
+      }
+    },
+    async callAPIPostFavorite(UserID, RestaurantID) {
+      axios.post('http://localhost:8000/api/v1/favorites/',
+        {
+          user_id: UserID,
+          restaurant_id: RestaurantID
+        }
+      ).then(
+        function (response) {
+          if (response.data.errorcode) alert(response.data.message);
+        }
+      ).catch(
+        function (error) {
+          alert(error);
+        }
+      );
+    },
+    async callAPIDeleteFavorite(FavoriteID) {
+      axios.request({
+        method: 'delete',
+        url: 'http://localhost:8000/api/v1/favorites/delete',
+        data: {favorite_id: FavoriteID}
+      }).then(
+        function (response) {
+          if (response.data.errorcode) alert(response.data.message);
+        }
+      ).catch(
+        function (error) {
+          alert(error);
+        }
+      );
+    },
+    async callAPIGetFavorite(UserID, RestaurantID) {
+      const response = await axios.get(
+        'http://localhost:8000/api/v1/favorites/?user_id=' + UserID + '&restaurant_id=' + RestaurantID
+      );
+      this.favorites = response.data.favorites;
+    },
   },
   props: ["userinfo", "csrf"]
 }
