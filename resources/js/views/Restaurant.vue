@@ -11,11 +11,11 @@
             <p class="shop-name">{{restaurant.name}}</p>
             <div class="shop-area-genles">
               <p>#{{restaurant.area}}</p>
-              <p v-for="genle, index in getGenle(restaurant.genles)" :key="index">#{{genle}}</p>
+              <p v-for="genle, index in splitCSV(restaurant.genles)" :key="index">#{{genle}}</p>
             </div>
             <div class="restaurant-card-footer">
               <a v-bind:href="'http://localhost:8000/app/restaurant/' + restaurant.id + '/detail'" class="shop-detail-button">詳しくみる</a>
-              <img :src="'/images/heart.png'" class="heart" alt="">
+              <img :src="'/images/heart_gray.png'" class="heart" alt="">
             </div>
           </div>
         </div>
@@ -26,7 +26,6 @@
 
 <script>
 import axios from "axios";
-import moment from "moment";
 import header from './HeaderWithSearchBar.vue';
 export default {
   components: {
@@ -40,18 +39,16 @@ export default {
     }
   },
   mounted() {
-    this.requestRestaurantsAPI();
-  },
-  filters: {
-    getTime(value) {
-      return moment(value).format("kk:mm");
-    },
-    getDate(value) {
-      return moment(value).format("YYYY/MM/DD");
-    },
+    this.callAPIGetRestaurant();
   },
   methods: {
-    async requestRestaurantsAPI(params={}) {
+    searchRestaurant(searchItems) {
+      this.callAPIGetRestaurant(searchItems);
+    },
+    splitCSV(value) {
+      return value || undefined ? value.split(',') : '';
+    },
+    async callAPIGetRestaurant(params={}) {
       let requestParameter = '?userid=' + this.id;
       Object.keys(params).forEach((key) => {
         requestParameter = params[key] != '' ? requestParameter + '&' + key + '=' + params[key] : requestParameter;
@@ -60,12 +57,6 @@ export default {
         "http://localhost:8000/api/v1/restaurants/" + requestParameter
       );
       this.restaurants = restaurantsResponse.data.restaurants;
-    },
-    searchRestaurant(searchItems) {
-      this.requestRestaurantsAPI(searchItems);
-    },
-    getGenle(value) {
-      return value.split(",")
     }
   },
   props: ["userinfo", "csrf"]

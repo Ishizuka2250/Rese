@@ -15,7 +15,7 @@
                 <p>予約{{(index + 1)}}</p>
               </div>
               <img v-bind:src="'/images/cancel.png'" alt="" class="reserve-card-img"
-                v-on:click="postDeleteReserve(reserve.id)">
+                v-on:click="callAPIDeleteReserve(reserve.id)">
             </div>
             <table class="reserve-detail">
               <tr>
@@ -28,7 +28,7 @@
               </tr>
               <tr>
                 <th>Time</th>
-                <td>{{hourMinuite(reserve.reserve_time)}}</td>
+                <td>{{toHourMinuite(reserve.reserve_time)}}</td>
               </tr>
               <tr>
                 <th>Number</th>
@@ -49,11 +49,11 @@
               <p class="shop-name">{{favorite.name}}</p>
               <div class="shop-area-genles">
                 <p>#{{favorite.area}}</p>
-                <p v-for="genle, index in getGenle(favorite.genles)" :key="index">#{{genle}}</p>
+                <p v-for="genle, index in splitCSV(favorite.genles)" :key="index">#{{genle}}</p>
               </div>
               <div class="favorite-card-footer">
                 <a href="#" class="shop-detail-button">詳しくみる</a>
-                <img :src="'/images/heart.png'" class="heart" alt="">
+                <img v-bind:src="'/images/heart_red.png'" class="heart" alt="">
               </div>
             </div>
           </div>
@@ -65,7 +65,6 @@
 
 <script>
 import axios from "axios";
-import moment from "moment";
 import header from './Header.vue';
 export default {
   components: {
@@ -79,31 +78,31 @@ export default {
       favorites: []
     }
   },
-  async mounted() {
-    this.getReserves();
-    this.getFavorites();
+  mounted() {
+    this.callAPIGetReserve();
+    this.callAPIGetFavorite();
   },
   methods: {
-    getGenle(value) {
+    splitCSV(value) {
       return value || undefined ? value.split(',') : '';
     },
-    hourMinuite(value) {
+    toHourMinuite(value) {
       const splitedValue = String(value).split(':');
       return splitedValue[0] + ':' + splitedValue[1];
     },
-    async getReserves() {
+    async callAPIGetReserve() {
       const reservesResponse = await axios.get(
         "http://localhost:8000/api/v1/reserves/?userid=" + this.id
       );
     this.reserves = reservesResponse.data.reserves;
     },
-    async getFavorites() {
+    async callAPIGetFavorite() {
       const favoritesResponse = await axios.get(
         "http://localhost:8000/api/v1/favorites/" + this.id
       );
       this.favorites = favoritesResponse.data.favorites;
     },
-    async postDeleteReserve(ReserveID) {
+    async callAPIDeleteReserve(ReserveID) {
       if (window.confirm('予約を削除しますか？')) {
         await axios.request({
           method: 'delete',
@@ -114,7 +113,7 @@ export default {
         }).catch(function(error) {
           alert(error);
         });
-        this.getReserves();
+        this.callAPIGetReserve();
       }
 
     }

@@ -10,14 +10,14 @@
         <img v-if="restaurantDetail.image_file_name" v-bind:src="'/shop-images/' + restaurantDetail.image_file_name" alt="">
         <div class="shop-area-genles">
           <p>#{{restaurantDetail.area}}</p>
-          <p v-for="genle, index in getGenle(restaurantDetail.genles)" :key="index">#{{genle}}</p>
+          <p v-for="genle, index in splitCSV(restaurantDetail.genles)" :key="index">#{{genle}}</p>
         </div>
         <p class="shop-detail">{{restaurantDetail.detail}}</p>
       </div>
       <div class="reserve-detail two-container flex-column">
         <div class="reserve-detail-input">
           <h2>予約</h2>
-          <input class="input date" type="date" v-model="selectReserveDate" v-on:change="getReservationAllow()" required>
+          <input class="input date" type="date" v-model="selectReserveDate" v-on:change="callAPIGetReserve('allow')" required>
           <select id="reserveTime" class="input" v-model="selectReserveTime" v-on:change="reservationNumberUpdate()" required>
             <option :value="null" disabled>予約時間を選択してください。</option>
             <option v-for="time, index in getReservationTime()" :key="index" v-bind:value="time">
@@ -52,7 +52,7 @@
             </table>
           </div>
         </div>
-        <div class="reserve-button" v-on:click="postReservation()">
+        <div class="reserve-button" v-on:click="callAPIPostReserve()">
           予約する
         </div>
       </div>
@@ -79,16 +79,12 @@ export default {
   components: {
     appHeader: header
   },
-  async mounted() {
-    const restaurantDetailResponse = await axios.get(
-      'http://localhost:8000/api/v1/restaurants/details?id=' + this.$route.params.id
-    );
-    this.restaurantDetail = restaurantDetailResponse.data.details[0];
-    this.selectReserveDate = moment().format('YYYY-MM-DD');
-    this.getReservationAllow();
+  mounted() {
+    this.callAPIGetRestaurant('details');
+    this.callAPIGetReserve('allow');
   },
   methods: {
-    getGenle(value) {
+    splitCSV(value) {
       return value || undefined ? value.split(',') : '';
     },
     reservationNumberUpdate() {
@@ -98,9 +94,16 @@ export default {
         }
       })
     },
-    async getReservationAllow() {
+    async callAPIGetRestaurant(args) {
+      const restaurantDetailResponse = await axios.get(
+        'http://localhost:8000/api/v1/restaurants/' + args + '?id=' + this.$route.params.id
+      );
+      this.restaurantDetail = restaurantDetailResponse.data.details[0];
+      this.selectReserveDate = moment().format('YYYY-MM-DD');
+    },
+    async callAPIGetReserve(args) {
       const reservationAllowResponse = await axios.get(
-        'http://localhost:8000/api/v1/reserves/allow?restaurantid=' + this.restaurantDetail.id
+        'http://localhost:8000/api/v1/reserves/' + args + '?restaurantid=' + this.restaurantDetail.id
           + '&date=' + this.selectReserveDate
       );
       this.reservationAllow = reservationAllowResponse.data.allow;
@@ -112,7 +115,7 @@ export default {
       });
       return reservationTime;
     },
-    async postReservation() {
+    async callAPIPostReserve() {
       if (this.selectReserveNumber < 1) {
         alert('予約人数が入力されていません.');
         return;

@@ -9,7 +9,7 @@
       <v-select :options="this.areas" v-model="area" class="search-bar combo"></v-select>
       <v-select :options="this.genles" v-model="genle" class="search-bar combo"></v-select>
       <input type="text" v-model="search" class="search-bar combo" placeholder="Search Restaurant..">
-      <img v-bind:src="'/images/glass.png'" @click="send" class="glass">
+      <img v-bind:src="'/images/glass.png'" @click="sendBody" class="glass">
       </div>
     </div>
     <div class="menu" id="menu">
@@ -42,23 +42,25 @@ export default {
     }
   },
   mounted() {
-    const headerOpen = document.getElementById("header-open");
-    headerOpen.addEventListener('click', () => {
-      const menu = document.getElementById("menu");
-      menu.classList.toggle('show');
-    });
-
-    const headerClose = document.getElementById("header-close");
-    headerClose.addEventListener('click',() => {
-      const menu = document.getElementById("menu");
-      menu.classList.toggle('show');
-    });
-
-    this.requestGetGenles();
-    this.requestGetAreas();
+    this.initListener();
+    this.callAPIGetRestaurant('genles');
+    this.callAPIGetRestaurant('areas');
   },
   methods: {
-    send() {
+    initListener() {
+      const headerOpen = document.getElementById("header-open");
+      headerOpen.addEventListener('click', () => {
+        const menu = document.getElementById("menu");
+        menu.classList.toggle('show');
+      });
+
+      const headerClose = document.getElementById("header-close");
+      headerClose.addEventListener('click',() => {
+        const menu = document.getElementById("menu");
+        menu.classList.toggle('show');
+      });
+    },
+    sendBody() {
       const sendArea = this.area == null ? 'All Area' : this.area;
       const sendGenle = this.genle == null ? 'All Genle' : this.genle;
       this.$emit('send-search', {
@@ -67,20 +69,22 @@ export default {
         search: this.search
       });
     },
-    async requestGetGenles() {
-      const genlesResponse = await axios.get(
-        "http://localhost:8000/api/v1/restaurants/genles"
+    async callAPIGetRestaurant(args) {
+      const response = await axios.get(
+        "http://localhost:8000/api/v1/restaurants/" + args
       );
-      this.genles = ['All Genle'];
-      genlesResponse.data.genles.forEach(v => this.genles.push(v.genle));
+      switch (args) {
+        case 'genles' :
+          this.genles = ['All Genle'];
+          response.data.genles.forEach(v => this.genles.push(v.genle));
+          break;
+        
+        case 'areas' :
+          this.areas = ['All Area'];
+          response.data.areas.forEach(v => this.areas.push(v.area));
+          break;
+      }
     },
-    async requestGetAreas() {
-      const areasResponse = await axios.get(
-        "http://localhost:8000/api/v1/restaurants/areas"
-      );
-      this.areas = ['All Area'];
-      areasResponse.data.areas.forEach(v => this.areas.push(v.area));
-    }
   },
   props: ["csrf"]
 }

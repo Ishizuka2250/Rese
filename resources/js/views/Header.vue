@@ -25,17 +25,22 @@
 <script>
 export default {
   mounted() {
-    const headerOpen = document.getElementById("header-open");
-    headerOpen.addEventListener('click', () => {
-      const menu = document.getElementById("menu");
-      menu.classList.toggle('show');
-    });
+    this.initListener();
+  },
+  methods: {
+    initListener() {
+      const headerOpen = document.getElementById("header-open");
+      headerOpen.addEventListener('click', () => {
+        const menu = document.getElementById("menu");
+        menu.classList.toggle('show');
+      });
 
-    const headerClose = document.getElementById("header-close");
-    headerClose.addEventListener('click',() => {
-      const menu = document.getElementById("menu");
-      menu.classList.toggle('show');
-    });
+      const headerClose = document.getElementById("header-close");
+      headerClose.addEventListener('click',() => {
+        const menu = document.getElementById("menu");
+        menu.classList.toggle('show');
+      });
+    }
   },
   props: ["csrf"]
 }
