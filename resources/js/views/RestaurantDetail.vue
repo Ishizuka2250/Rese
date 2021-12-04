@@ -4,7 +4,7 @@
     <div class="app-body">
       <div class="restaurant-detail two-container flex-column">
         <div class="detail-header">
-          <a href="/app/restaurant" class="prev-button">＜</a>
+          <a v-on:click='$router.back()' class="prev-button">＜</a>
           <h2 class="restaurant-name">{{restaurantDetail.name}}</h2>
         </div>
         <img v-if="restaurantDetail.image_file_name" v-bind:src="'/shop-images/' + restaurantDetail.image_file_name" alt="">
@@ -52,7 +52,7 @@
             </table>
           </div>
         </div>
-        <div class="reserve-button" v-on:click="callAPIPostReserve()">
+        <div class="reserve-button" v-on:click="reserve()">
           予約する
         </div>
       </div>
@@ -94,6 +94,10 @@ export default {
         }
       })
     },
+    async reserve() {
+      await this.callAPIPostReserve();
+      window.location.href = 'http://localhost:8000/app/home';
+    },
     async callAPIGetRestaurant(args) {
       const restaurantDetailResponse = await axios.get(
         'http://localhost:8000/api/v1/restaurants/' + args + '?id=' + this.$route.params.id
@@ -122,7 +126,7 @@ export default {
       } else if (this.reserve_time) {
         alert('予約時間を選択してください.');
       }
-      axios.post(
+      await axios.post(
         'http://localhost:8000/api/v1/reserves/',
         {
           user_id: this.userid,
