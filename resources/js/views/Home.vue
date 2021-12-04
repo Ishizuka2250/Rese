@@ -15,7 +15,7 @@
                 <p>予約{{(index + 1)}}</p>
               </div>
               <img v-bind:src="'/images/cancel.png'" alt="" class="reserve-card-img"
-                v-on:click="callAPIDeleteReserve(reserve.id)">
+                v-on:click="removeReserve(reserve.id)">
             </div>
             <table class="reserve-detail">
               <tr>
@@ -36,6 +36,9 @@
               </tr>
             </table>
           </div>
+          <div v-if="reservesEmpty" id="reserve-empty" class="empty">
+            現在ご予約はありません。
+          </div>
         </div>
       </div>
       <div class="favorites">
@@ -52,10 +55,13 @@
                 <p v-for="genle, index in splitCSV(favorite.genles)" :key="index">#{{genle}}</p>
               </div>
               <div class="favorite-card-footer">
-                <a href="#" class="shop-detail-button">詳しくみる</a>
-                <img v-bind:src="'/images/heart_red.png'" class="heart" alt="">
+                <a v-bind:href="'http://localhost:8000/app/restaurant/' + favorite.restaurant_id + '/detail'" class="shop-detail-button">詳しくみる</a>
+                <img v-bind:src="'/images/heart_red.png'" v-on:click="removeFavorite(favorite.id)" class="heart" alt="">
               </div>
             </div>
+          </div>
+          <div v-if="favoritesEmpty" id="favorite-empty" class="empty">
+            現在お気に入りは登録されていません。
           </div>
         </div>
       </div>
@@ -75,7 +81,9 @@ export default {
       id: this.userinfo.id,
       user: this.userinfo.name,
       reserves: [],
-      favorites: []
+      reservesEmpty: false,
+      favorites: [],
+      favoritesEmpty: false,
     }
   },
   mounted() {
@@ -90,32 +98,61 @@ export default {
       const splitedValue = String(value).split(':');
       return splitedValue[0] + ':' + splitedValue[1];
     },
+    showEmpty() {
+      document.getElementById('reserve-empty').classList.remove('hidden')
+      document.getElementById('favorite-empty').classList.remove('hidden');
+    },
+    async removeFavorite(FavoriteID) {
+      if (window.confirm('お気に入りから削除しますか？')) {
+        this.callAPIDeleteFavorite(FavoriteID);
+        this.callAPIGetFavorite();
+      }
+    },
+    async removeReserve(ReserveID) {
+      if (window.confirm('予約を削除しますか？')) {
+        this.callAPIDeleteReserve(ReserveID);
+        this.callAPIGetReserve();
+      }
+    },
     async callAPIGetReserve() {
       const reservesResponse = await axios.get(
         "http://localhost:8000/api/v1/reserves/?userid=" + this.id
       );
     this.reserves = reservesResponse.data.reserves;
+    this.reservesEmpty = this.reserves.length == 0 ? true : false;
     },
     async callAPIGetFavorite() {
       const favoritesResponse = await axios.get(
         "http://localhost:8000/api/v1/favorites/?user_id=" + this.id
       );
       this.favorites = favoritesResponse.data.favorites;
+      this.favoritesEmpty = this.favorites.length == 0 ? true : false;
     },
     async callAPIDeleteReserve(ReserveID) {
-      if (window.confirm('予約を削除しますか？')) {
-        await axios.request({
-          method: 'delete',
-          url: 'http://localhost:8000/api/v1/reserves/delete',
-          data: {reserve_id: ReserveID}
-        }).then(function(response) {
-          alert(response.data.message);
-        }).catch(function(error) {
+      await axios.request({
+        method: 'delete',
+        url: 'http://localhost:8000/api/v1/reserves/delete',
+        data: {reserve_id: ReserveID}
+      }).then(function(response) {
+        alert(response.data.message);
+      }).catch(function(error) {
+        alert(error);
+      });
+    },
+    async callAPIDeleteFavorite(FavoriteID) {
+      axios.request({
+        method: 'delete',
+        url: 'http://localhost:8000/api/v1/favorites/delete',
+        data: {favorite_id: FavoriteID}
+      }).then(
+        function (response) {
+          if (response.data.errorcode) alert(response.data.message);
+        }
+      ).catch(
+        function (error) {
           alert(error);
-        });
-        this.callAPIGetReserve();
-      }
-
+        }
+      );
     }
   },
   props: ["userinfo", "csrf"],
@@ -138,6 +175,17 @@ export default {
   display: block;
   font-size: 26px;
   margin: 20px 0;
+}
+.hidden {
+  display: none;
+}
+.empty {
+  color: #000;
+  width: 90%;
+  padding: 25px;
+  border-radius: 5px;
+  height: 150px;
+  box-shadow: 0 0 5px #000;
 }
 .reserves {
   width: 400px;
@@ -249,6 +297,9 @@ export default {
   display: inline-block;
   width: 30px;
   height: 30px;
+}
+.heart:hover {
+  cursor: pointer;
 }
 
 </style>
