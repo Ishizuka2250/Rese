@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <modalWindow v-if="modalWindowShow" :message="modalMessage" :windowtype="'OK'" :action="modalInvokeAciton" @modal-action="modalAction"></modalWindow>
     <appHeader :csrf="this.csrf"></appHeader>
     <div class="app-body">
       <div class="restaurant-detail two-container flex-column">
@@ -64,7 +65,12 @@
 import header from './Header.vue';
 import axios from 'axios';
 import moment from 'moment';
+import modal from './ModalWindow.vue'
 export default {
+  components: {
+    appHeader: header,
+    modalWindow: modal
+  },
   data() {
     return {
       userid: this.userinfo.id,
@@ -73,11 +79,11 @@ export default {
       selectReserveNumber: 0,
       maxReserveNumber: 0,
       restaurantDetail: [],
-      reservationAllow: []
+      reservationAllow: [],
+      modalMessage: 'ご予約ありがとうございます！',
+      modalWindowShow: false,
+      modalInvokeAciton: () => {}
     }
-  },
-  components: {
-    appHeader: header
   },
   mounted() {
     this.callAPIGetRestaurant('details');
@@ -94,9 +100,13 @@ export default {
         }
       })
     },
+    modalAction(value) {
+      this.modalWindowShow = false;
+    },
     async reserve() {
       await this.callAPIPostReserve();
-      window.location.href = 'http://localhost:8000/app/home';
+      this.modalInvokeAciton = () => {window.location.href = 'http://localhost:8000/app/home'};
+      this.modalWindowShow = true;
     },
     async callAPIGetRestaurant(args) {
       const restaurantDetailResponse = await axios.get(
@@ -137,7 +147,7 @@ export default {
         }
       ).then(
         function (response) {
-          alert(response.data.message);
+          //alert(response.data.message);
         }
       ).catch(
         function(error) {
