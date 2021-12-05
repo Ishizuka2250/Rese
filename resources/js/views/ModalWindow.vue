@@ -15,11 +15,6 @@
 
 <script>
 export default {
-  data() {
-    return {
-      d: ''
-    }
-  },
   methods: {
     modalAction(value) {
       this.action();
