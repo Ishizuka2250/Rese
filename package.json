@@ -28,5 +28,8 @@
         "moment": "^2.29.1",
         "vue-router": "^3.5.3",
         "vue-select": "^3.16.0"
+    },
+    "scripts": {
+        "heroku-postbuild": "npm run prod"
     }
 }
