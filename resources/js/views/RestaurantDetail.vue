@@ -80,6 +80,7 @@ export default {
       maxReserveNumber: 0,
       restaurantDetail: [],
       reservationAllow: [],
+      reserveStatus: 0,
       modalMessage: 'ご予約ありがとうございます！',
       modalWindowShow: false,
       modalInvokeAciton: () => {}
@@ -105,8 +106,10 @@ export default {
     },
     async reserve() {
       await this.callAPIPostReserve();
-      this.modalInvokeAciton = () => {window.location.href = 'http://localhost:8000/app/home'};
-      this.modalWindowShow = true;
+      if (this.reserveStatus) {
+        this.modalInvokeAciton = () => {window.location.href = 'http://localhost:8000/app/home'};
+        this.modalWindowShow = true;
+      }
     },
     async callAPIGetRestaurant(args) {
       const restaurantDetailResponse = await axios.get(
@@ -136,7 +139,7 @@ export default {
       } else if (this.reserve_time) {
         alert('予約時間を選択してください.');
       }
-      await axios.post(
+      this.reserveStatus = await axios.post(
         'http://localhost:8000/api/v1/reserves/',
         {
           user_id: this.userid,
@@ -147,11 +150,13 @@ export default {
         }
       ).then(
         function (response) {
-          //alert(response.data.message);
+          if (response.data.errorcode > 0) alert(response.data.message);
+          return response.data.success;
         }
       ).catch(
         function(error) {
           console.log(error);
+          return 0;
         }
       );
     }

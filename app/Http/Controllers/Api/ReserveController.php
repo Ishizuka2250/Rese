@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Reserve;
 use App\Models\Restaurant;
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -117,6 +119,23 @@ class ReserveController extends Controller
         return $reserve;
     }
 
+    public function reserveDateCheck($RestaurantID, $ReserveDate, $ReserveTime)
+    {
+        $restaurant = Restaurant::find($RestaurantID);
+        if ($restaurant)
+        {
+            $cNowDate = new Carbon(Carbon::now()->format('Y-m-d'));
+            $cReserveDate = new Carbon($ReserveDate);
+            $cNowDateTime = Carbon::now();
+            $cReserveDateTime = new Carbon($ReserveDate . ' ' . $ReserveTime);
+
+            if ($cNowDate->gt($cReserveDate)) return false;
+            if ($cNowDateTime->gt($cReserveDateTime)) return false;
+            
+            return true;
+        }
+    }
+
     public function reserveNumberCheck($RestaurantID, $ReserveDate, $ReserveTime, $ReserveNumber)
     {
         $currentReserve = $this->currentReservation($RestaurantID, $ReserveDate);
@@ -174,6 +193,19 @@ class ReserveController extends Controller
             ], 200);
         }
 
+        if (! $this->reserveDateCheck(
+            $request->restaurant_id,
+            $request->reserve_date,
+            $request->reserve_time
+            ))
+        {
+            return response()->json([
+                'success' => 0,
+                'errorcode' => 3,
+                'message' => '指定の時間は予約できません.'
+            ], 200);
+        }
+
         if (! $this->reserveNumberCheck(
             $request->restaurant_id,
             $request->reserve_date,
@@ -182,7 +214,7 @@ class ReserveController extends Controller
         {
             return response()->json([
                 'success' => 0,
-                'errorcode' => 3,
+                'errorcode' => 4,
                 'message' => '満席のため予約できません.'
             ], 200);
         }
