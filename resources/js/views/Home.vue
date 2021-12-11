@@ -106,14 +106,13 @@ export default {
       if (window.confirm('お気に入りから削除しますか？')) {
         await this.callAPIDeleteFavorite(FavoriteID);
         await this.callAPIGetFavorite();
-        this.$forceUpdate();
+        console.log(this.favorites)
       }
     },
     async removeReserve(ReserveID) {
       if (window.confirm('予約を削除しますか？')) {
         await this.callAPIDeleteReserve(ReserveID);
         await this.callAPIGetReserve();
-        this.$forceUpdate();
       }
     },
     async callAPIGetReserve() {
