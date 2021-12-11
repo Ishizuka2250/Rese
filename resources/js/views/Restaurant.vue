@@ -79,10 +79,14 @@ export default {
       }
     },
     async callAPIPostFavorite(UserID, RestaurantID) {
-      axios.post('/api/v1/favorites/',
+      axios.request(
         {
-          user_id: UserID,
-          restaurant_id: RestaurantID
+          method: 'post',
+          url: '/api/v1/favorites/',
+          data: {
+            user_id: UserID,
+            restaurant_id: RestaurantID
+          }
         }
       ).then(
         function (response) {
