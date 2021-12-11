@@ -61,7 +61,7 @@ export default {
         requestParameter = params[key] != '' ? requestParameter + '&' + key + '=' + params[key] : requestParameter;
       });
       const restaurantsResponse = await axios.get(
-        "/api/v1/restaurants/" + requestParameter
+        "/api/v1/restaurants" + requestParameter
       );
       this.restaurants = restaurantsResponse.data.restaurants;
     },
@@ -115,7 +115,7 @@ export default {
     },
     async callAPIGetFavorite(UserID, RestaurantID) {
       const response = await axios.get(
-        '/api/v1/favorites/?user_id=' + UserID + '&restaurant_id=' + RestaurantID
+        '/api/v1/favorites?user_id=' + UserID + '&restaurant_id=' + RestaurantID
       );
       this.favorites = response.data.favorites;
     },

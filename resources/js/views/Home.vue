@@ -116,14 +116,14 @@ export default {
     },
     async callAPIGetReserve() {
       const reservesResponse = await axios.get(
-        "/api/v1/reserves/?userid=" + this.id
+        "/api/v1/reserves?userid=" + this.id
       );
     this.reserves = reservesResponse.data.reserves;
     this.reservesEmpty = this.reserves.length == 0 ? true : false;
     },
     async callAPIGetFavorite() {
       const favoritesResponse = await axios.get(
-        "/api/v1/favorites/?user_id=" + this.id
+        "/api/v1/favorites?user_id=" + this.id
       );
       this.favorites = favoritesResponse.data.favorites;
       this.favoritesEmpty = this.favorites.length == 0 ? true : false;
