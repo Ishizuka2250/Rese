@@ -55,7 +55,7 @@
                 <p v-for="genle, index in splitCSV(favorite.genles)" :key="index">#{{genle}}</p>
               </div>
               <div class="favorite-card-footer">
-                <a v-bind:href="'http://localhost:8000/app/restaurant/' + favorite.restaurant_id + '/detail'" class="shop-detail-button">詳しくみる</a>
+                <a v-bind:href="'/app/restaurant/' + favorite.restaurant_id + '/detail'" class="shop-detail-button">詳しくみる</a>
                 <img v-bind:src="'/images/heart_red.png'" v-on:click="removeFavorite(favorite.id)" class="heart" alt="">
               </div>
             </div>
@@ -116,14 +116,14 @@ export default {
     },
     async callAPIGetReserve() {
       const reservesResponse = await axios.get(
-        "http://localhost:8000/api/v1/reserves/?userid=" + this.id
+        "/api/v1/reserves/?userid=" + this.id
       );
     this.reserves = reservesResponse.data.reserves;
     this.reservesEmpty = this.reserves.length == 0 ? true : false;
     },
     async callAPIGetFavorite() {
       const favoritesResponse = await axios.get(
-        "http://localhost:8000/api/v1/favorites/?user_id=" + this.id
+        "/api/v1/favorites/?user_id=" + this.id
       );
       this.favorites = favoritesResponse.data.favorites;
       this.favoritesEmpty = this.favorites.length == 0 ? true : false;
@@ -131,7 +131,7 @@ export default {
     async callAPIDeleteReserve(ReserveID) {
       await axios.request({
         method: 'delete',
-        url: 'http://localhost:8000/api/v1/reserves/delete',
+        url: '/api/v1/reserves/delete',
         data: {reserve_id: ReserveID}
       }).then(function(response) {
         alert(response.data.message);
@@ -142,7 +142,7 @@ export default {
     async callAPIDeleteFavorite(FavoriteID) {
       axios.request({
         method: 'delete',
-        url: 'http://localhost:8000/api/v1/favorites/delete',
+        url: '/api/v1/favorites/delete',
         data: {favorite_id: FavoriteID}
       }).then(
         function (response) {

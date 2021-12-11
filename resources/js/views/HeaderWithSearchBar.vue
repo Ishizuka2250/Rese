@@ -71,7 +71,7 @@ export default {
     },
     async callAPIGetRestaurant(args) {
       const response = await axios.get(
-        "http://localhost:8000/api/v1/restaurants/" + args
+        "/api/v1/restaurants/" + args
       );
       switch (args) {
         case 'genles' :

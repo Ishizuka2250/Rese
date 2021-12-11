@@ -14,7 +14,7 @@
               <p v-for="genle, index in splitCSV(restaurant.genles)" :key="index">#{{genle}}</p>
             </div>
             <div class="restaurant-card-footer">
-              <a v-bind:href="'http://localhost:8000/app/restaurant/' + restaurant.id + '/detail'" class="shop-detail-button">詳しくみる</a>
+              <a v-bind:href="'/app/restaurant/' + restaurant.id + '/detail'" class="shop-detail-button">詳しくみる</a>
               <img v-if="isFavorite(restaurant.favorite_id)" :src="'/images/heart_red.png'" class="heart" alt=""
                 v-on:click="updateFavorite(userid, index)">
               <img v-else :src="'/images/heart_gray.png'" class="heart" alt=""
@@ -61,7 +61,7 @@ export default {
         requestParameter = params[key] != '' ? requestParameter + '&' + key + '=' + params[key] : requestParameter;
       });
       const restaurantsResponse = await axios.get(
-        "http://localhost:8000/api/v1/restaurants/" + requestParameter
+        "/api/v1/restaurants/" + requestParameter
       );
       this.restaurants = restaurantsResponse.data.restaurants;
     },
@@ -79,7 +79,7 @@ export default {
       }
     },
     async callAPIPostFavorite(UserID, RestaurantID) {
-      axios.post('http://localhost:8000/api/v1/favorites/',
+      axios.post('/api/v1/favorites/',
         {
           user_id: UserID,
           restaurant_id: RestaurantID
@@ -97,7 +97,7 @@ export default {
     async callAPIDeleteFavorite(FavoriteID) {
       axios.request({
         method: 'delete',
-        url: 'http://localhost:8000/api/v1/favorites/delete',
+        url: '/api/v1/favorites/delete',
         data: {favorite_id: FavoriteID}
       }).then(
         function (response) {
@@ -111,7 +111,7 @@ export default {
     },
     async callAPIGetFavorite(UserID, RestaurantID) {
       const response = await axios.get(
-        'http://localhost:8000/api/v1/favorites/?user_id=' + UserID + '&restaurant_id=' + RestaurantID
+        '/api/v1/favorites/?user_id=' + UserID + '&restaurant_id=' + RestaurantID
       );
       this.favorites = response.data.favorites;
     },

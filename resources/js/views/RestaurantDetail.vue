@@ -107,20 +107,20 @@ export default {
     async reserve() {
       await this.callAPIPostReserve();
       if (this.reserveStatus) {
-        this.modalInvokeAciton = () => {window.location.href = 'http://localhost:8000/app/home'};
+        this.modalInvokeAciton = () => {window.location.href = '/app/home'};
         this.modalWindowShow = true;
       }
     },
     async callAPIGetRestaurant(args) {
       const restaurantDetailResponse = await axios.get(
-        'http://localhost:8000/api/v1/restaurants/' + args + '?id=' + this.$route.params.id
+        '/api/v1/restaurants/' + args + '?id=' + this.$route.params.id
       );
       this.restaurantDetail = restaurantDetailResponse.data.details[0];
       this.selectReserveDate = moment().format('YYYY-MM-DD');
     },
     async callAPIGetReserve(args) {
       const reservationAllowResponse = await axios.get(
-        'http://localhost:8000/api/v1/reserves/' + args + '?restaurantid=' + this.restaurantDetail.id
+        '/api/v1/reserves/' + args + '?restaurantid=' + this.restaurantDetail.id
           + '&date=' + this.selectReserveDate
       );
       this.reservationAllow = reservationAllowResponse.data.allow;
@@ -140,7 +140,7 @@ export default {
         alert('予約時間を選択してください.');
       }
       this.reserveStatus = await axios.post(
-        'http://localhost:8000/api/v1/reserves/',
+        '/api/v1/reserves/',
         {
           user_id: this.userid,
           restaurant_id: this.restaurantDetail.id,
