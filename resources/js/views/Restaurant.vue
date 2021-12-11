@@ -74,7 +74,7 @@ export default {
         await this.callAPIDeleteFavorite(this.restaurants[Index].favorite_id)
         this.restaurants[Index].favorite_id = 0;
       } else {
-        this.callAPIPostFavorite(UserID, this.restaurants[Index].id);
+        await this.callAPIPostFavorite(UserID, this.restaurants[Index].id);
         this.restaurants[Index].favorite_id = await this.getNewFavoriteID(UserID, this.restaurants[Index].id);
       }
     },

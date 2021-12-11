@@ -104,15 +104,15 @@ export default {
     },
     async removeFavorite(FavoriteID) {
       if (window.confirm('お気に入りから削除しますか？')) {
-        this.callAPIDeleteFavorite(FavoriteID);
-        this.callAPIGetFavorite();
+        await this.callAPIDeleteFavorite(FavoriteID);
+        await this.callAPIGetFavorite();
         console.log(this.favorites)
       }
     },
     async removeReserve(ReserveID) {
       if (window.confirm('予約を削除しますか？')) {
-        this.callAPIDeleteReserve(ReserveID);
-        this.callAPIGetReserve();
+        await this.callAPIDeleteReserve(ReserveID);
+        await this.callAPIGetReserve();
       }
     },
     async callAPIGetReserve() {
