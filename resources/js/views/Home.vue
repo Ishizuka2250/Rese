@@ -125,7 +125,7 @@ export default {
       const favoritesResponse = await axios.get(
         "/api/v1/favorites?user_id=" + this.id
       );
-      this.favorites = favoritesResponse.data.favorites;
+      this.$set(this.favorites, favoritesResponse.data.favorites);
       this.favoritesEmpty = this.favorites.length == 0 ? true : false;
     },
     async callAPIDeleteReserve(ReserveID) {
