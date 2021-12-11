@@ -140,7 +140,7 @@ export default {
         alert('予約時間を選択してください.');
       }
       this.reserveStatus = await axios.post(
-        '/api/v1/reserves/',
+        '/api/v1/reserves',
         {
           user_id: this.userid,
           restaurant_id: this.restaurantDetail.id,

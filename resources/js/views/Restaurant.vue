@@ -82,7 +82,7 @@ export default {
       axios.request(
         {
           method: 'post',
-          url: '/api/v1/favorites/',
+          url: '/api/v1/favorites',
           data: {
             user_id: UserID,
             restaurant_id: RestaurantID
