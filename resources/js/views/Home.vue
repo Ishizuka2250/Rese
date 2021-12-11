@@ -106,7 +106,6 @@ export default {
       if (window.confirm('お気に入りから削除しますか？')) {
         await this.callAPIDeleteFavorite(FavoriteID);
         await this.callAPIGetFavorite();
-        console.log(this.favorites)
       }
     },
     async removeReserve(ReserveID) {
