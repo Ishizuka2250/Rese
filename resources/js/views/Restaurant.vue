@@ -79,7 +79,7 @@ export default {
       }
     },
     async callAPIPostFavorite(UserID, RestaurantID) {
-      axios.request(
+      await axios.request(
         {
           method: 'post',
           url: '/api/v1/favorites',
@@ -99,7 +99,7 @@ export default {
       );
     },
     async callAPIDeleteFavorite(FavoriteID) {
-      axios.request({
+      await axios.request({
         method: 'delete',
         url: '/api/v1/favorites/delete',
         data: {favorite_id: FavoriteID}

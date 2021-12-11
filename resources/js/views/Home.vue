@@ -104,15 +104,15 @@ export default {
     },
     async removeFavorite(FavoriteID) {
       if (window.confirm('お気に入りから削除しますか？')) {
-        await this.callAPIDeleteFavorite(FavoriteID);
-        await this.callAPIGetFavorite();
+        this.callAPIDeleteFavorite(FavoriteID);
+        this.callAPIGetFavorite();
         console.log(this.favorites)
       }
     },
     async removeReserve(ReserveID) {
       if (window.confirm('予約を削除しますか？')) {
-        await this.callAPIDeleteReserve(ReserveID);
-        await this.callAPIGetReserve();
+        this.callAPIDeleteReserve(ReserveID);
+        this.callAPIGetReserve();
       }
     },
     async callAPIGetReserve() {
@@ -141,7 +141,7 @@ export default {
       });
     },
     async callAPIDeleteFavorite(FavoriteID) {
-      axios.request({
+      await axios.request({
         method: 'delete',
         url: '/api/v1/favorites/delete',
         data: {favorite_id: FavoriteID}
