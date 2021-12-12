@@ -9,6 +9,10 @@
           <h2 class="restaurant-name">{{restaurantDetail.name}}</h2>
         </div>
         <img v-if="restaurantDetail.image_file_name" v-bind:src="'/shop-images/' + restaurantDetail.image_file_name" alt="">
+        <div class="open-close">
+          <p>OPEN {{restaurantDetail.open_time | hourMinute}}</p>
+          <p>CLOSE {{restaurantDetail.close_time | hourMinute}}</p>
+        </div>
         <div class="shop-area-genles">
           <p>#{{restaurantDetail.area}}</p>
           <p v-for="genle, index in splitCSV(restaurantDetail.genles)" :key="index">#{{genle}}</p>
@@ -89,6 +93,11 @@ export default {
   mounted() {
     this.callAPIGetRestaurant('details');
     this.callAPIGetReserve('allow');
+  },
+  filters: {
+    hourMinute(value) {
+      return value.split(':')[0] + ':' + value.split(':')[1];
+    }
   },
   methods: {
     splitCSV(value) {
@@ -217,6 +226,17 @@ export default {
 }
 .shop-area-genles p:not(:last-of-type) {
   margin-right: 10px;
+}
+.open-close {
+  display: flex;
+  font-size: 1.2em;
+}
+.open-close > p {
+  display: inline-block;
+  margin-right: 25px;
+}
+.shop-detail {
+  line-height: 1.35em;
 }
 .reserve-detail {
   background: #305dff;
