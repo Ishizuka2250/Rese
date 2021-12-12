@@ -116,7 +116,7 @@ export default {
         '/api/v1/restaurants/' + args + '?id=' + this.$route.params.id
       );
       this.restaurantDetail = restaurantDetailResponse.data.details[0];
-      this.selectReserveDate = moment().format('YYYY-MM-DD');
+      //this.selectReserveDate = moment().format('YYYY-MM-DD');
     },
     async callAPIGetReserve(args) {
       const reservationAllowResponse = await axios.get(

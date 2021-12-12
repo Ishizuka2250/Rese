@@ -192,7 +192,7 @@ export default {
   margin-right: 50px;
 }
 .favorites {
-  width: 60%;
+  width: calc(100% - 450px);
 }
 .list {
   display: flex;
